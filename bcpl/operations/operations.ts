@@ -65,6 +65,7 @@ export const operations = {
     "ENDPROC": 103,
     "GETBYTE": 120,
     "PUTBYTE": 121,
+    "INITGL": 999, // Cannot be found in implementation, but was specified in original paper
 };
 
 export type Op = keyof typeof operations;

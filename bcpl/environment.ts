@@ -5,6 +5,8 @@ export class Environment {
     framePointer = 0;
     currentOffset = 0;
 
+    globalVariables: number[] = [];
+
     clear() {
         this.stack = [];
         this.framePointer = 0;
@@ -14,7 +16,14 @@ export class Environment {
     push(value: number) {
         this.currentOffset++;
         const offset = this.framePointer + this.currentOffset - 1;
-        this.stack[offset] = value;
+        this.stack[offset] = value & TRUE;
+    }
+
+    pop(): number {
+        const offset = this.framePointer + this.currentOffset - 1;
+        delete this.stack[offset];
+        this.currentOffset--;
+        return this.stack[this.framePointer + this.currentOffset - 1];
     }
     
     topValue(): number {
