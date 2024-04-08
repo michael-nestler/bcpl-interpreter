@@ -21,9 +21,10 @@ export class Environment {
 
   pop(): number {
     const offset = this.framePointer + this.currentOffset - 1;
+    const value = this.stack[offset];
     delete this.stack[offset];
     this.currentOffset--;
-    return this.stack[this.framePointer + this.currentOffset - 1];
+    return value;
   }
 
   topValue(): number {

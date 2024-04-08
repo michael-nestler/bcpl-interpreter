@@ -1,0 +1,18 @@
+LN 1    # f[n-2] at stack index 0
+LN 1    # f[n-1] at stack index 1
+LN 10   # i at stack index 2
+LAB L1
+LP 0
+LP 1
+PLUS    # f[n] = f[n-1] + f[n-2]
+LP 1    # Save current f[n-1] as new f[n-2]
+SP 0
+SP 1    # Save current f[n] as new f[n-1]
+LN 1
+MINUS   # i--
+LP 2    # Load i so it can be popped without destruction
+LN 2
+NE
+JT L1   # If i > 0, recurse
+LP 1    # Load result into top of stack
+FINISH
