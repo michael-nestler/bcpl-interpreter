@@ -2,7 +2,11 @@
   "name": "bcpl-interpreter",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "biome": "biome check --apply ."
+  },
   "devDependencies": {
+    "@biomejs/biome": "^1.6.4",
     "@types/bun": "latest"
   },
   "peerDependencies": {

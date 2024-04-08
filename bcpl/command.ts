@@ -1,6 +1,6 @@
-import { Op } from "./operations/operations";
+import type { Op } from "./operations/operations";
 
 export interface Command {
-    operation: Op;
-    arguments: number[];
+  operation: Op;
+  arguments: number[];
 }
