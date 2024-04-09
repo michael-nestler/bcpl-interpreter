@@ -1,0 +1,15 @@
+LN 1    # factorial[n] at stack index 0
+LN 1    # n at stack index 1
+LAB L1
+LP 0
+LP 1
+MULT
+SP 0    # factorial[n] = n * factorial[n-1]
+LN 1
+PLUS
+LP 1
+LN 7
+GR
+JF L1
+LP 0    # Load result into top of stack
+FINISH
