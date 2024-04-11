@@ -20,6 +20,7 @@ export class Program {
   commands: Command[] = [];
   programCounter = 0;
   labels = new Map<number, number>();
+  returnValue = 0;
 
   next(): boolean {
     const command = this.commands[this.programCounter];
@@ -133,8 +134,48 @@ export class Program {
       case "INITGL":
         initGlobalVariableToValue(this.environment, this.firstArg(command), this.resolveLabel(this.secondArg(command)));
         break;
+      case "LF":
+        this.environment.push(this.resolveLabel(this.firstArg(command)));
+        break;
+
+      case "FNAP": {
+        const returnAddress = this.programCounter;
+        const functionAddress = 0x1234;
+        this.programCounter = this.environment.pop();
+
+        const oldOffset = this.environment.currentOffset;
+        this.environment.push(this.environment.framePointer);
+        this.environment.push(returnAddress);
+        this.environment.push(functionAddress);
+        this.environment.framePointer += oldOffset;
+        this.environment.currentOffset = 0;
+        break;
+      }
+
+      case "ENTRY":
+      case "ENDPROC":
+        break;
+
+      case "SAVE":
+        this.environment.currentOffset += this.firstArg(command);
+        break;
+
+      case "FNRN": {
+        this.returnValue = this.environment.pop();
+        const oldFramePointer = this.environment.stack[this.environment.framePointer];
+        this.programCounter = this.environment.stack[this.environment.framePointer + 1];
+        this.environment.currentOffset = this.environment.framePointer - oldFramePointer;
+        this.environment.framePointer = oldFramePointer;
+        this.environment.push(this.returnValue);
+        this.environment.stack.splice(this.environment.framePointer + this.environment.currentOffset);
+        break;
+      }
 
       case "FINISH":
+        return false;
+
+      default:
+        console.log(`Command not implemented: ${command.operation}`);
         return false;
     }
     return true;

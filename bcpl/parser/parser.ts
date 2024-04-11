@@ -22,6 +22,9 @@ function parseCommand(line: string): Command {
 
 function parseArgument(argument: string): number {
   const number = Number(removePrefix(argument, "L"));
+  if (argument.startsWith("'") && argument.endsWith("'") && argument.length === 3) {
+    return argument[1].charCodeAt(0);
+  }
   if (Number.isNaN(number)) {
     console.warn(`Invalid argument: ${argument}`);
     return 0;

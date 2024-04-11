@@ -66,6 +66,7 @@ export const operations = {
   GETBYTE: 120,
   PUTBYTE: 121,
   INITGL: 999, // Cannot be found in implementation, but was specified in original paper
+  LF: 999,
 };
 
 export type Op = keyof typeof operations;

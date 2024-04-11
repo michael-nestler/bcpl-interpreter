@@ -1,0 +1,11 @@
+LN 9
+JUMP L2
+ENTRY L1 8 't' 'e' 's' 't' 'f' 'u' 'n' 'c'
+SAVE 3
+LN 418
+FNRN
+ENDPROC
+LAB L2
+LF L1
+FNAP 1
+FINISH
