@@ -1,4 +1,3 @@
-import assert from "node:assert";
 import type { Command } from "./command";
 import { FALSE, TRUE } from "./constants";
 import { Environment } from "./environment";
@@ -182,18 +181,24 @@ export class Program {
   }
 
   private firstArg(command: Command): number {
-    assert(command.arguments[0] !== undefined, `Expected an argument for command of type ${command.operation}`);
+    this.require(command.arguments[0] !== undefined, `Expected an argument for command of type ${command.operation}`);
     return command.arguments[0];
   }
 
   private secondArg(command: Command): number {
-    assert(command.arguments[1] !== undefined, `Expected a second argument for command of type ${command.operation}`);
+    this.require(command.arguments[1] !== undefined, `Expected a second argument for command of type ${command.operation}`);
     return command.arguments[1];
   }
 
   private resolveLabel(labelIndex: number): number {
     const result = this.labels.get(labelIndex);
-    assert(result !== undefined, `Expected to find referenced label L${labelIndex}`);
+    this.require(result !== undefined, `Expected to find referenced label L${labelIndex}`);
     return result;
+  }
+
+  private require(condition: boolean, errorMessage: string): asserts condition {
+    if (!condition) {
+      throw new Error(`Assertion failed: ${errorMessage}`);
+    }
   }
 }

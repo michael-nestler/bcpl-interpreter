@@ -1,0 +1,5 @@
+{
+  "name": "bcpl",
+  "type": "module",
+  "module": "index.ts"
+}
