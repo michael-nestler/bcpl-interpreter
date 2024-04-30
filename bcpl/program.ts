@@ -1,5 +1,5 @@
 import type { Command } from "./command";
-import { FALSE, TRUE } from "./constants";
+import { FALSE, TRUE, WRITEF_ADDRESS } from "./constants";
 import { Environment } from "./environment";
 import { divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
@@ -20,9 +20,13 @@ export class Program {
   programCounter = 0;
   labels = new Map<number, number>();
   returnValue = 0;
+  output: string = "";
 
   next(): boolean {
     const command = this.commands[this.programCounter];
+    if (!command) {
+      return false;
+    }
     this.programCounter++;
     switch (command.operation) {
       case "TRUE":
@@ -44,9 +48,11 @@ export class Program {
         remainder(this.environment);
         break;
       case "PLUS":
+      case "ADD":
         plus(this.environment);
         break;
       case "MINUS":
+      case "SUB":
         minus(this.environment);
         break;
       case "NEG":
@@ -151,6 +157,16 @@ export class Program {
         break;
       }
 
+      case "RTAP": {
+        if (this.environment.topValue() === WRITEF_ADDRESS) {
+          const k = this.firstArg(command);
+          const formatString = this.environment.strings.get(this.environment.stack[this.environment.framePointer + k + 3])!;
+          this.output += formatString.replace("%n", this.environment.stack[this.environment.framePointer + k + 4].toString());
+          break;
+        }
+        return false;
+      }
+
       case "ENTRY":
       case "ENDPROC":
         break;
@@ -172,6 +188,27 @@ export class Program {
 
       case "FINISH":
         return false;
+
+      case "STORE":
+        return true;
+
+      case "GLOBAL":
+        const returnAddress = this.programCounter;
+        const functionAddress = 0x1234;
+        this.programCounter = this.resolveLabel(command.arguments.at(-1)!);
+
+        const oldOffset = this.environment.currentOffset;
+        this.environment.push(this.environment.framePointer);
+        this.environment.push(returnAddress);
+        this.environment.push(functionAddress);
+        this.environment.framePointer += oldOffset;
+        this.environment.currentOffset = 0;
+        break;
+
+      case "LSTR":
+        const string = String.fromCharCode(...command.arguments.slice(1));
+        this.environment.push(this.environment.storeString(string));
+        break;
 
       default:
         console.log(`Command not implemented: ${command.operation}`);
