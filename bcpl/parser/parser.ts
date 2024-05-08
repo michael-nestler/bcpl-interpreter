@@ -28,19 +28,22 @@ export function parseCode(text: string): Command[] {
         if (currentCommand) {
           if (isArgument(currentToken)) {
             currentCommand.arguments.push(parseArgument(currentToken));
+            lastCharacter = [line, column - 1];
           } else {
             currentCommand.end = lastCharacter;
             commands.push(currentCommand);
             if (!(currentToken in operations)) {
               throw new Error(`Unknown command: ${currentToken}, line ${line}, column ${column}`);
             }
-            currentCommand = { operation: currentToken as Op, arguments: [], start: [line, column], end: [-1, -1] };
+            currentCommand = { operation: currentToken as Op, arguments: [], start: [line, column - currentToken.length], end: [-1, -1] };
+            lastCharacter = [line, column - 1];
           }
         } else {
           if (!(currentToken in operations)) {
             throw new Error(`Unknown command: ${currentToken}, line ${line}, column ${column}`);
           }
-          currentCommand = { operation: currentToken as Op, arguments: [], start: [line, column], end: [-1, -1] };
+          currentCommand = { operation: currentToken as Op, arguments: [], start: [line, column - currentToken.length], end: [-1, -1] };
+          lastCharacter = [line, column - 1];
         }
         currentToken = "";
       }
@@ -57,7 +60,6 @@ export function parseCode(text: string): Command[] {
       quotes++;
     }
     currentToken += text[i];
-    lastCharacter = [line, column];
     column++;
   }
   if (currentCommand) {
