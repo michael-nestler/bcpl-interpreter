@@ -12,7 +12,7 @@ describe("arithmetics operations", () => {
     environment.push(3234);
     multiply(environment);
 
-    expect(environment.topValue()).toBe(0b0111110011000010);
+    expect(environment.topValue()).toBe(187989186);
   });
 
   test("divide", () => {
@@ -36,7 +36,7 @@ describe("arithmetics operations", () => {
     environment.push(0b0111110011000010);
     plus(environment);
 
-    expect(environment.topValue()).toBe(0b0101111111010011);
+    expect(environment.topValue()).toBe(90067);
   });
 
   test("minus", () => {
@@ -51,6 +51,6 @@ describe("arithmetics operations", () => {
     environment.push(0b0110011001001111);
     negate(environment);
 
-    expect(environment.topValue()).toBe(0b1001100110110001);
+    expect(environment.topValue()).toBe(-0b0110011001001111);
   });
 });

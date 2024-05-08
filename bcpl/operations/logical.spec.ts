@@ -16,11 +16,11 @@ describe("logical operations", () => {
   });
 
   test("leftShift", () => {
-    environment.push(0b1110001100010001);
+    environment.push(0b1110001100010001_0000000000000000);
     environment.push(4);
     leftShift(environment);
 
-    expect(environment.topValue()).toBe(0b0011000100010000);
+    expect(environment.topValue()).toBe(0b0011000100010000_0000000000000000);
   });
 
   test("logicalOr", () => {
@@ -43,6 +43,6 @@ describe("logical operations", () => {
     environment.push(0b0000010000000010);
     logicalNot(environment);
 
-    expect(environment.topValue()).toBe(0b1111101111111101);
+    expect(environment.topValue()).toBe(0b1111111111111111_1111101111111101 | 0);
   });
 });

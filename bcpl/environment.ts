@@ -1,4 +1,4 @@
-import { TRUE, WRITEF_ADDRESS } from "./constants";
+import { TRUE, WRITEF_ADDRESS, WRITES_ADDRESS } from "./constants";
 
 export class Environment {
   stack: number[] = [];
@@ -8,9 +8,11 @@ export class Environment {
   globalVariables: number[] = [];
 
   strings = new Map<number, string>();
+  staticVariables: number[] = [];
 
   constructor() {
-    this.globalVariables[74] = WRITEF_ADDRESS;
+    this.globalVariables[89] = WRITES_ADDRESS;
+    this.globalVariables[94] = WRITEF_ADDRESS;
   }
   
   clear() {
@@ -50,11 +52,12 @@ export class Environment {
     const leftOffset = this.framePointer + this.currentOffset - 2;
     const rightOffset = this.framePointer + this.currentOffset - 1;
     this.stack[leftOffset] = operation(this.stack[leftOffset], this.stack[rightOffset]) & TRUE;
+    
     this.currentOffset = this.currentOffset - 1;
   }
 
   storeString(string: string): number {
-    const key = Math.floor(Math.random() * TRUE);
+    const key = Math.floor(Math.random() * 0xffff);
     this.strings.set(key, string);
     return key;
   }
