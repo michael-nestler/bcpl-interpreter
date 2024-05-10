@@ -3,7 +3,6 @@ import type { Command } from "../command";
 import { type Op, operations } from "../operations/operations";
 
 export function parseCode(text: string): Command[] {
-  text = text + "\n";
   const commands: Command[] = [];
   let comment = false;
   let line = 1;
@@ -13,11 +12,11 @@ export function parseCode(text: string): Command[] {
   let lastCharacter: [number, number] = [1, 1];
   let quotes = 0;
   for (let i = 0; i < text.length; i++) {
-    if (text[i] === '#') {
+    if (text[i] === "#") {
       comment = true;
       continue;
     }
-    if (text[i] === '\n') {
+    if (text[i] === "\n") {
       comment = false;
     }
     if (comment) {
@@ -47,7 +46,7 @@ export function parseCode(text: string): Command[] {
         }
         currentToken = "";
       }
-      if (text[i] === '\n') {
+      if (text[i] === "\n") {
         line++;
         column = 1;
         quotes = 0;
@@ -82,5 +81,8 @@ function parseArgument(argument: string): number {
 }
 
 function isArgument(argument: string) {
-  return Number.isSafeInteger(Number(removePrefix(argument, "L"))) || argument.startsWith("'") && argument.endsWith("'") && argument.length === 3;
+  return (
+    Number.isSafeInteger(Number(removePrefix(argument, "L"))) ||
+    (argument.startsWith("'") && argument.endsWith("'") && argument.length === 3)
+  );
 }

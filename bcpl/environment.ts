@@ -14,7 +14,7 @@ export class Environment {
     this.globalVariables[89] = WRITES_ADDRESS;
     this.globalVariables[94] = WRITEF_ADDRESS;
   }
-  
+
   clear() {
     this.stack = [];
     this.framePointer = 0;
@@ -52,7 +52,7 @@ export class Environment {
     const leftOffset = this.framePointer + this.currentOffset - 2;
     const rightOffset = this.framePointer + this.currentOffset - 1;
     this.stack[leftOffset] = operation(this.stack[leftOffset], this.stack[rightOffset]) & TRUE;
-    
+
     this.currentOffset = this.currentOffset - 1;
   }
 

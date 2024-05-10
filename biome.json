@@ -15,6 +15,6 @@
     "lineWidth": 140
   },
   "files": {
-    "ignore": ["ui/.angular"]
+    "ignore": ["ui/.angular", ".vscode"]
   }
 }

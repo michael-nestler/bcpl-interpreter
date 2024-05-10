@@ -12,5 +12,6 @@ Sum =   5 number of ways =      4
 Sum =  21 number of ways =     44
 Sum = 100 number of ways =   4563
 Sum = 200 number of ways =  73682
-`);
+`,
+  );
 });

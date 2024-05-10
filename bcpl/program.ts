@@ -20,7 +20,7 @@ export class Program {
   programCounter = 0;
   labels = new Map<number, number>();
   returnValue = 0;
-  output: string = "";
+  output = "";
   currentDataLabel = 0;
 
   next(): boolean {
@@ -159,32 +159,39 @@ export class Program {
         break;
       }
 
-      case "RTAP":
+      case "RTAP": {
         const k = this.firstArg(command);
         const target = this.environment.pop();
         switch (target) {
-          case WRITEF_ADDRESS:
-            const formatString = this.environment.strings.get(this.environment.stack[this.environment.framePointer + k + 3])!;
+          case WRITEF_ADDRESS: {
+            const stringRef = this.environment.stack[this.environment.framePointer + k + 3];
+            const formatString = this.environment.strings.get(stringRef);
+            if (!formatString) {
+              console.error("writef(...) call invoked with invalid string reference", stringRef);
+              return false;
+            }
             let formattedString = "";
             let argumentOffset = 3;
             for (let i = 0; i < formatString.length; i++) {
               switch (formatString.charAt(i)) {
-                case '%': 
+                case "%":
                   switch (formatString.charAt(++i)) {
-                    case '%': 
-                      formattedString += '%';
+                    case "%":
+                      formattedString += "%";
                       break;
-                    case 'i': {
+                    case "i": {
                       const width = Number(formatString.charAt(++i));
                       if (!Number.isSafeInteger(width)) {
                         console.log("Invalid format substitution", "%", "i", formatString.charAt(i));
                         return false;
                       }
-                      formattedString += this.environment.stack[this.environment.framePointer + k + (++argumentOffset)].toString().padStart(width);
+                      formattedString += this.environment.stack[this.environment.framePointer + k + ++argumentOffset]
+                        .toString()
+                        .padStart(width);
                       break;
                     }
-                    case 'n': {
-                      formattedString += this.environment.stack[this.environment.framePointer + k + (++argumentOffset)].toString();
+                    case "n": {
+                      formattedString += this.environment.stack[this.environment.framePointer + k + ++argumentOffset].toString();
                       break;
                     }
                     default:
@@ -192,24 +199,32 @@ export class Program {
                       return false;
                   }
                   break;
-                default: formattedString += formatString.charAt(i);
+                default:
+                  formattedString += formatString.charAt(i);
               }
             }
             this.output += formattedString;
             this.environment.currentOffset = k;
             console.log("[stdout]", formattedString);
             return true;
-          case WRITES_ADDRESS:
-            const outputtedString = this.environment.strings.get(this.environment.stack[this.environment.framePointer + k + 3])!
+          }
+          case WRITES_ADDRESS: {
+            const stringRef = this.environment.stack[this.environment.framePointer + k + 3];
+            const outputtedString = this.environment.strings.get(stringRef);
+            if (!outputtedString) {
+              console.error("writes(...) call invoked with invalid string reference", stringRef);
+              return false;
+            }
             this.output += outputtedString;
             console.log("[stdout]", outputtedString);
             this.environment.currentOffset = k;
             return true;
-          default:
+          }
+          default: {
             const returnAddress = this.programCounter;
             const functionAddress = 0x1234;
             this.programCounter = target;
-    
+
             const newFramePointer = this.environment.framePointer + k;
             this.environment.stack[newFramePointer] = this.environment.framePointer;
             this.environment.stack[newFramePointer + 1] = returnAddress;
@@ -217,7 +232,9 @@ export class Program {
             this.environment.framePointer = newFramePointer;
             this.environment.currentOffset -= k;
             return true;
+          }
         }
+      }
 
       case "ENTRY":
         break;
@@ -253,26 +270,28 @@ export class Program {
       case "STORE":
         return true;
 
-      case "GLOBAL":
+      case "GLOBAL": {
         const returnAddress = this.programCounter;
         const functionAddress = 0x1234;
-        this.programCounter = this.resolveLabel(command.arguments.at(-1)!);
+        this.programCounter = this.resolveLabel(this.lastArg(command));
 
         this.environment.push(this.environment.framePointer);
         this.environment.push(returnAddress);
         this.environment.push(functionAddress);
         this.environment.currentOffset = 3;
         break;
+      }
 
-      case "LSTR":
+      case "LSTR": {
         const string = String.fromCharCode(...command.arguments.slice(1));
         this.environment.push(this.environment.storeString(string));
         break;
+      }
 
       case "DATALAB":
         this.currentDataLabel = this.firstArg(command);
         break;
-      
+
       case "ITEMN":
         this.environment.staticVariables.push(this.firstArg(command));
         if (this.currentDataLabel) {
@@ -281,11 +300,12 @@ export class Program {
         }
         break;
 
-      case "RV":
+      case "RV": {
         const staticVariable = this.environment.pop();
         this.environment.push(this.environment.staticVariables[staticVariable]);
         break;
-      
+      }
+
       case "LLL":
         this.environment.push(this.resolveLabel(this.firstArg(command)));
         break;
@@ -301,10 +321,15 @@ export class Program {
     this.require(command.arguments[0] !== undefined, `Expected an argument for command of type ${command.operation}`);
     return command.arguments[0];
   }
-
   private secondArg(command: Command): number {
     this.require(command.arguments[1] !== undefined, `Expected a second argument for command of type ${command.operation}`);
     return command.arguments[1];
+  }
+
+  private lastArg(command: Command): number {
+    const arg = command.arguments.at(-1);
+    this.require(arg !== undefined, `Expected an argument for command of type ${command.operation}`);
+    return arg;
   }
 
   private resolveLabel(labelIndex: number): number {

@@ -1,6 +1,6 @@
 import { JsonPipe } from "@angular/common";
-import { Component, OnInit, ViewEncapsulation, inject } from "@angular/core";
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { Component, type OnInit, ViewEncapsulation, inject } from "@angular/core";
+import { DomSanitizer, type SafeHtml } from "@angular/platform-browser";
 import { loadProgram } from "bcpl";
 import { codeToHtml } from "shiki";
 
@@ -29,7 +29,8 @@ import { codeToHtml } from "shiki";
     <button type="button" (click)="resumeExecution()">Run</button>
     <button type="button" (click)="reset()">Reset</button>
   `,
-  styles: [`
+  styles: [
+    `
     :root {
       --breakpoint-sidebar-width: 20px;
     }
@@ -89,7 +90,8 @@ import { codeToHtml } from "shiki";
     .output-view {
       flex: 1;
     }
-  `],
+  `,
+  ],
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
@@ -101,7 +103,7 @@ LSTR 13 'A' 'n' 's' 'w' 'e' 'r' ' ' 'i' 's' ' ' '%' 'n' 10
 LP 4 LP 3 ADD LP 5 ADD LG 94 RTAP 6 RTRN STACK 3
 ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   breakpoints = Array.from({ length: this.code.split("\n").length }, () => false);
-  html: SafeHtml = '';
+  html: SafeHtml = "";
   title = "ui";
   program = loadProgram(this.code);
   domSanitizer = inject(DomSanitizer);
@@ -114,19 +116,25 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   async next() {
     this.program.next();
     await this.loadHtml();
-    setTimeout(() => document.getElementsByClassName("highlighted-word")[0]?.scrollIntoView({ block: 'nearest' }));
+    setTimeout(() => document.getElementsByClassName("highlighted-word")[0]?.scrollIntoView({ block: "nearest" }));
   }
 
   private async loadHtml() {
     this.stack = this.program.environment.stack.slice(0, this.program.environment.framePointer + this.program.environment.currentOffset);
     const command = this.program.commands[this.program.programCounter];
-    this.html = this.domSanitizer.bypassSecurityTrustHtml(await codeToHtml(this.code, {
-      lang: 'asm', theme: 'tokyo-night', decorations: command && [{
-        start: { line: command.start[0] - 1, character: command.start[1] - 1 },
-        end: { line: command.end[0] - 1, character: command.end[1] },
-        properties: { class: 'highlighted-word' }
-      }]
-    }));
+    this.html = this.domSanitizer.bypassSecurityTrustHtml(
+      await codeToHtml(this.code, {
+        lang: "asm",
+        theme: "tokyo-night",
+        decorations: command && [
+          {
+            start: { line: command.start[0] - 1, character: command.start[1] - 1 },
+            end: { line: command.end[0] - 1, character: command.end[1] },
+            properties: { class: "highlighted-word" },
+          },
+        ],
+      }),
+    );
   }
 
   async resumeExecution() {
