@@ -61,6 +61,9 @@ export function parseCode(text: string): Command[] {
     currentToken += text[i];
     column++;
   }
+  if (currentToken) {
+    lastCharacter = [line, column - 1];
+  }
   if (currentCommand) {
     currentCommand.end = lastCharacter;
     commands.push(currentCommand);

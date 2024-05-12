@@ -1,0 +1,44 @@
+:root {
+    --breakpoint-sidebar-width: 20px;
+}
+
+.breakpoints {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    font-family: monospace;
+    width: var(--breakpoint-sidebar-width);
+    height: 100%;
+}
+
+.breakpoint-wrapper {
+    position: relative;
+}
+
+.breakpoint-wrapper .breakpoint {
+    position: absolute;
+    margin: 1.5px;
+    font-family: monospace;
+    opacity: 0;
+    transition: opacity 100ms ease-in;
+}
+
+.breakpoint-wrapper .breakpoint:checked,
+.breakpoint-wrapper:hover .breakpoint {
+    opacity: 1;
+}
+
+.shiki-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.shiki {
+    margin: 0;
+    padding-left: var(--breakpoint-sidebar-width);
+    min-height: 100%;
+}
+
+.highlighted-word {
+    background-color: olivedrab;
+}
