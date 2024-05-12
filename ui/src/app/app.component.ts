@@ -2,12 +2,14 @@ import { JsonPipe } from "@angular/common";
 import { Component, type OnInit, signal } from "@angular/core";
 import { loadProgram } from "bcpl";
 import { CodeViewComponent } from "./code-view/code-view.component";
+import { ControlPanelComponent } from "./control-panel/control-panel.component";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [JsonPipe, CodeViewComponent],
+  imports: [JsonPipe, CodeViewComponent, ControlPanelComponent],
   template: `
+    <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()"></control-panel>
     <div class="main-view">
       <div class="code-view">
         <code-view [code]="code" [highlightedSection]="highlightedSection()" (breakpointsChanged)="breakpoints = $event"></code-view>
@@ -15,10 +17,6 @@ import { CodeViewComponent } from "./code-view/code-view.component";
       <textarea readonly class="output-view">{{ program.output }}</textarea>
     </div>
     {{ stack | json }}
-    <br>
-    <button type="button" (click)="next()">Next</button>
-    <button type="button" (click)="resumeExecution()">Run</button>
-    <button type="button" (click)="reset()">Reset</button>
   `,
   styles: [
     `
@@ -53,41 +51,11 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   stack: number[] = [];
 
   ngOnInit() {
-    this.updateHighlightedCode();
+    this.updateCodeView();
   }
 
-  next() {
-    this.program.next();
+  updateCodeView() {
     this.stack = this.program.environment.stack;
-    this.updateHighlightedCode();
-  }
-
-  async resumeExecution() {
-    let count = 0;
-    while (this.program.next()) {
-      if (count++ >= 1_000_000) {
-        count = await new Promise((resolve) => {
-          setTimeout(() => resolve(0), 0);
-        });
-      }
-      const line = this.program.commands[this.program.programCounter]?.start?.[0];
-      if (this.breakpoints[line - 1]) {
-        break;
-      }
-    }
-    this.updateHighlightedCode();
-    this.stack = this.program.environment.stack;
-  }
-
-  reset() {
-    this.program.environment.clear();
-    this.program.programCounter = 0;
-    this.program.output = "";
-    this.stack = this.program.environment.stack;
-    this.updateHighlightedCode();
-  }
-
-  updateHighlightedCode() {
     const command = this.program.commands[this.program.programCounter];
     if (command) {
       this.highlightedSection.set([...command.start, ...command.end]);

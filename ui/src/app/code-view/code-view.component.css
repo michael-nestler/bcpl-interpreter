@@ -12,12 +12,12 @@
 }
 
 .breakpoint-wrapper {
-    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .breakpoint-wrapper .breakpoint {
-    position: absolute;
-    margin: 1.5px;
     font-family: monospace;
     opacity: 0;
     transition: opacity 100ms ease-in;

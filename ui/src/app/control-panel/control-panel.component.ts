@@ -1,0 +1,57 @@
+import { Component, input, output } from "@angular/core";
+import { Program } from "bcpl";
+
+@Component({
+    selector: "control-panel",
+    standalone: true,
+    template: `
+        <button type="button" [disabled]="state !== 'paused'" (click)="next()">
+            <div class="material-symbols-outlined">step</div>
+        </button>
+        <button type="button" [disabled]="state !== 'paused'" (click)="resumeExecution()">
+            <div class="material-symbols-outlined">play_circle</div>
+        </button>
+        <button type="button" (click)="reset()">
+            <div class="material-symbols-outlined stop">stop</div>
+        </button>
+    `,
+    styleUrl: "./control-panel.component.css",
+})
+export class ControlPanelComponent {
+    program = input.required<Program>();
+    breakpoints = input.required<boolean[]>();
+    updateCodeView = output();
+    state: 'paused' | 'finished' | 'running' = 'paused';
+
+    next() {
+        this.program().next();
+        this.updateCodeView.emit();
+    }
+
+    async resumeExecution() {
+        let count = 0;
+        let running;
+        this.state = 'running';
+        while (running = this.program().next()) {
+            if (count++ >= 1_000_000) {
+                count = await new Promise((resolve) => {
+                    setTimeout(() => resolve(0), 0);
+                });
+            }
+            const line = this.program().commands[this.program().programCounter]?.start?.[0];
+            if (this.breakpoints()[line - 1]) {
+                break;
+            }
+        }
+        this.state = running ? 'paused' : 'finished';
+        this.updateCodeView.emit();
+    }
+
+    reset() {
+        this.program().environment.clear();
+        this.program().programCounter = 0;
+        this.program().output = "";
+        this.state = 'paused';
+        this.updateCodeView.emit();
+    }
+}

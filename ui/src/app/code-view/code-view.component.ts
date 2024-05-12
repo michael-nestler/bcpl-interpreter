@@ -9,10 +9,10 @@ import { codeToHtml } from "shiki";
   template: `
         <div class="breakpoints">
           @for (breakpoint of breakpoints; let index = $index; track index) {
-            <span class="breakpoint-wrapper">
+            <code class="breakpoint-wrapper">
               &ZeroWidthSpace;
               <input class="breakpoint" type="checkbox" [value]="breakpoint" (change)="setBreakpoint($event, index)">
-            </span>
+          </code>
           }
         </div>
         <div class="shiki-wrapper" [innerHtml]="highlightedCodeHtml()"></div>
