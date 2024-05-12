@@ -6,10 +6,12 @@
 button {
     background-color: #403d02;
     border: 0;
+    cursor: pointer;
 }
 
 button:disabled {
-    background-color: #666662;
+    cursor: not-allowed;
+    filter: grayscale(40%) contrast(50%);
 }
 
 button:hover:not(:disabled) {
