@@ -9,10 +9,13 @@ import { Program } from "bcpl";
             <div class="material-symbols-outlined">step</div>
         </button>
         <button type="button" [disabled]="state !== 'paused'" (click)="resumeExecution()">
-            <div class="material-symbols-outlined">play_circle</div>
+            <div class="material-symbols-outlined">play_arrow</div>
         </button>
         <button type="button" (click)="reset()">
-            <div class="material-symbols-outlined stop">stop</div>
+            <div class="material-symbols-outlined">stop</div>
+        </button>
+        <button type="button">
+            <div class="material-symbols-outlined">folder_open</div>
         </button>
     `,
     styleUrl: "./control-panel.component.css",

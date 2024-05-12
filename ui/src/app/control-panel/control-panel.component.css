@@ -12,23 +12,12 @@ button:disabled {
     background-color: #666662;
 }
 
+button:hover:not(:disabled) {
+    filter: brightness(90%);
+}
+
 .material-symbols-outlined {
     display: block;
     margin: auto;
     color: #a3a3a3;
-    font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24
-}
-
-.material-symbols-outlined.stop {
-    display: block;
-    margin: auto;
-    font-variation-settings:
-    'FILL' 1,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24
 }

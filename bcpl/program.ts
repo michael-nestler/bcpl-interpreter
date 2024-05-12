@@ -147,13 +147,12 @@ export class Program {
       case "FNAP": {
         const k = this.firstArg(command);
         const returnAddress = this.programCounter;
-        const functionAddress = 0x1234;
         this.programCounter = this.environment.pop();
 
         const newFramePointer = this.environment.framePointer + k;
         this.environment.stack[newFramePointer] = this.environment.framePointer;
         this.environment.stack[newFramePointer + 1] = returnAddress;
-        this.environment.stack[newFramePointer + 2] = functionAddress;
+        this.environment.stack[newFramePointer + 2] = this.programCounter;
         this.environment.framePointer = newFramePointer;
         this.environment.currentOffset -= k;
         break;
@@ -222,13 +221,12 @@ export class Program {
           }
           default: {
             const returnAddress = this.programCounter;
-            const functionAddress = 0x1234;
             this.programCounter = target;
 
             const newFramePointer = this.environment.framePointer + k;
             this.environment.stack[newFramePointer] = this.environment.framePointer;
             this.environment.stack[newFramePointer + 1] = returnAddress;
-            this.environment.stack[newFramePointer + 2] = functionAddress;
+            this.environment.stack[newFramePointer + 2] = target;
             this.environment.framePointer = newFramePointer;
             this.environment.currentOffset -= k;
             return true;
@@ -272,12 +270,11 @@ export class Program {
 
       case "GLOBAL": {
         const returnAddress = this.programCounter;
-        const functionAddress = 0x1234;
         this.programCounter = this.resolveLabel(this.lastArg(command));
 
         this.environment.push(this.environment.framePointer);
         this.environment.push(returnAddress);
-        this.environment.push(functionAddress);
+        this.environment.push(this.programCounter);
         this.environment.currentOffset = 3;
         break;
       }
