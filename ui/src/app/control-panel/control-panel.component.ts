@@ -28,6 +28,7 @@ export class ControlPanelComponent {
     program = input.required<Program>();
     breakpoints = input.required<boolean[]>();
     updateCodeView = output();
+    resetProgram = output();
     loadCode = output<string>();
     state: 'paused' | 'finished' | 'running' = 'paused';
 
@@ -41,7 +42,7 @@ export class ControlPanelComponent {
         let running;
         this.state = 'running';
         while (running = this.program().next()) {
-            if (count++ >= 1_000_000) {
+            if (count++ >= 5_000_000) {
                 count = await new Promise((resolve) => {
                     setTimeout(() => resolve(0), 0);
                 });
@@ -56,11 +57,8 @@ export class ControlPanelComponent {
     }
 
     reset() {
-        this.program().environment.clear();
-        this.program().programCounter = 0;
-        this.program().output = "";
         this.state = 'paused';
-        this.updateCodeView.emit();
+        this.resetProgram.emit();
     }
 
     browseBCPL() {

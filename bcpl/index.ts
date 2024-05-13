@@ -13,5 +13,8 @@ export function loadProgram(ocodeSrc: string): Program {
       program.labels.set(command.arguments[0], index);
     }
   });
+  if (commands[0]?.operation === "ENTRY") {
+    program.programCounter = commands.length - 1;
+  }
   return program;
 }

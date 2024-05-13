@@ -9,7 +9,7 @@ import { ControlPanelComponent } from "./control-panel/control-panel.component";
   standalone: true,
   imports: [JsonPipe, CodeViewComponent, ControlPanelComponent],
   template: `
-    <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()" (loadCode)="loadCode($event)"></control-panel>
+    <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()" (loadCode)="loadCode($event)" (resetProgram)="resetProgram()"></control-panel>
     <div class="main-view">
       <div class="code-view">
         <code-view [code]="code" [highlightedSection]="highlightedSection()" (breakpointsChanged)="breakpoints = $event"></code-view>
@@ -37,6 +37,7 @@ import { ControlPanelComponent } from "./control-panel/control-panel.component";
       border: 0;
       resize: none;
       color: #a3a3a3;
+      font-family: 'Courier New', Courier, monospace;
     }
   `,
   ],
@@ -71,5 +72,9 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
     this.code = code;
     this.program = loadProgram(code);
     this.updateCodeView();
+  }
+
+  resetProgram() {
+    this.loadCode(this.code);
   }
 }
