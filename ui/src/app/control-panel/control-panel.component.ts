@@ -5,6 +5,13 @@ import { Program } from "bcpl";
     selector: "control-panel",
     standalone: true,
     template: `
+        <button type="button" popovertarget="browser-action">
+            <div class="material-symbols-outlined">folder_open</div>
+        </button>
+        <div popover id="browser-action">
+            <button type="button" (click)="browseBCPL()"><span class="material-symbols-outlined">feature_search</span> Predefined BCPL</button>
+            <button type="button" (click)="pasteOCODE()"><span class="material-symbols-outlined">content_paste_go</span> Paste OCODE</button>
+        </div>
         <button type="button" [disabled]="state !== 'paused'" (click)="next()">
             <div class="material-symbols-outlined">step</div>
         </button>
@@ -14,9 +21,6 @@ import { Program } from "bcpl";
         <button type="button" (click)="reset()">
             <div class="material-symbols-outlined">stop</div>
         </button>
-        <button type="button">
-            <div class="material-symbols-outlined">folder_open</div>
-        </button>
     `,
     styleUrl: "./control-panel.component.css",
 })
@@ -24,6 +28,7 @@ export class ControlPanelComponent {
     program = input.required<Program>();
     breakpoints = input.required<boolean[]>();
     updateCodeView = output();
+    loadCode = output<string>();
     state: 'paused' | 'finished' | 'running' = 'paused';
 
     next() {
@@ -56,5 +61,15 @@ export class ControlPanelComponent {
         this.program().output = "";
         this.state = 'paused';
         this.updateCodeView.emit();
+    }
+
+    browseBCPL() {
+        
+    }
+
+    async pasteOCODE() {
+        const text = await navigator.clipboard.readText();
+        this.loadCode.emit(text);
+        this.state = 'paused';
     }
 }

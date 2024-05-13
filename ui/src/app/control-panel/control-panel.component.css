@@ -1,25 +1,47 @@
 :host {
     display: block;
     background-color: rgb(26, 27, 38);
-}
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --button-color: #403d02;
+    --font-color: #a3a3a3;
+    
+    button {
+        background-color: var(--button-color);
+        border: 0;
+        cursor: pointer;
+    }
 
-button {
-    background-color: #403d02;
-    border: 0;
-    cursor: pointer;
-}
+    button:disabled {
+        cursor: not-allowed;
+        filter: grayscale(40%) contrast(50%);
+    }
 
-button:disabled {
-    cursor: not-allowed;
-    filter: grayscale(40%) contrast(50%);
-}
+    button:hover:not(:disabled) {
+        filter: brightness(90%);
+    }
 
-button:hover:not(:disabled) {
-    filter: brightness(90%);
-}
+    #browser-action {
+        border: 0;
+        margin: 0;
+        left: 0;
+        top: 26px;
+        background-color: var(--button-color);
+        font-size: 16px;
 
-.material-symbols-outlined {
-    display: block;
-    margin: auto;
-    color: #a3a3a3;
+        button {
+            display: block;
+            color: var(--font-color);
+        }
+
+        .material-symbols-outlined {
+            display: inline;
+            font-size: 16px;
+        }
+    }
+
+    .material-symbols-outlined {
+        display: block;
+        margin: auto;
+        color: var(--font-color);
+    }
 }
