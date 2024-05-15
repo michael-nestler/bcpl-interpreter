@@ -2,6 +2,10 @@
     --breakpoint-sidebar-width: 20px;
 }
 
+code-view {
+    position: relative;
+}
+
 .breakpoints {
     display: flex;
     flex-direction: column;
