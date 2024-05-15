@@ -3,6 +3,7 @@ export const operations = {
   FALSE: 5,
   RV: 8,
   FNAP: 10,
+  MUL: 11,
   MULT: 11,
   DIV: 12,
   REM: 13,

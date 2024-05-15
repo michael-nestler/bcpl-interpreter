@@ -1,15 +1,30 @@
-import { Component, input, output } from "@angular/core";
+import { JsonPipe } from "@angular/common";
+import { HttpClient } from "@angular/common/http";
+import { Component, OnInit, inject, input, output, signal } from "@angular/core";
 import { Program } from "bcpl";
+import { firstValueFrom } from "rxjs";
 
 @Component({
     selector: "control-panel",
     standalone: true,
+    imports: [JsonPipe],
     template: `
         <button type="button" popovertarget="browser-action">
             <div class="material-symbols-outlined">folder_open</div>
         </button>
         <div popover id="browser-action">
-            <button type="button" (click)="browseBCPL()"><span class="material-symbols-outlined">feature_search</span> Predefined BCPL</button>
+            <div class="browse-bcpl-wrapper">
+                <button type="button" (click)="browseBCPL()">
+                    <span class="material-symbols-outlined">feature_search</span>
+                    Predefined BCPL
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+                <div class="side-menu">
+                    @for (program of predefinedPrograms(); track $index) {
+                        <button type="button" (click)="loadPredefinedProgram(program)">{{ program }}</button>
+                    }
+                </div>
+            </div>
             <button type="button" (click)="pasteOCODE()"><span class="material-symbols-outlined">content_paste_go</span> Paste OCODE</button>
         </div>
         <button type="button" [disabled]="state !== 'paused'" (click)="next()">
@@ -24,13 +39,21 @@ import { Program } from "bcpl";
     `,
     styleUrl: "./control-panel.component.css",
 })
-export class ControlPanelComponent {
+export class ControlPanelComponent implements OnInit {
     program = input.required<Program>();
     breakpoints = input.required<boolean[]>();
     updateCodeView = output();
     resetProgram = output();
     loadCode = output<string>();
     state: 'paused' | 'finished' | 'running' = 'paused';
+    predefinedPrograms = signal<string[]>([]);
+    http = inject(HttpClient);
+
+    async ngOnInit() {
+        const response = await firstValueFrom(this.http.get<string[]>("/assets/bcpl/index.json"));
+        console.log(response);
+        this.predefinedPrograms.set(response);
+    }
 
     next() {
         this.program().next();
@@ -62,11 +85,17 @@ export class ControlPanelComponent {
     }
 
     browseBCPL() {
-        
+
     }
 
     async pasteOCODE() {
         const text = await navigator.clipboard.readText();
+        this.loadCode.emit(text);
+        this.state = 'paused';
+    }
+
+    async loadPredefinedProgram(name: string) {
+        const text = await firstValueFrom(this.http.get(`/assets/bcpl/${name}.ocode`, { responseType: 'text' }));
         this.loadCode.emit(text);
         this.state = 'paused';
     }

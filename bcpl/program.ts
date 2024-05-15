@@ -39,6 +39,7 @@ export class Program {
       case "LN":
         loadValue(this.environment, this.firstArg(command));
         break;
+      case "MUL":
       case "MULT":
         multiply(this.environment);
         break;
@@ -262,20 +263,22 @@ export class Program {
         break;
       }
 
-      case "FINISH":
-        return false;
-
-      case "STORE":
-        return true;
-
       case "GLOBAL": {
         const returnAddress = this.programCounter;
-        this.programCounter = this.resolveLabel(this.lastArg(command));
+        const labelIndex = command.arguments.slice(1).findIndex((value, index) => value === 1 && index % 2 === 0);
+        for (let i = 1; i < command.arguments.length - 1; i += 2) {
+          this.environment.globalVariables[command.arguments[i]] = command.arguments[i + 1];
+        }
+        if (labelIndex !== -1) {
+          this.programCounter = this.resolveLabel(command.arguments[labelIndex + 2]);
 
-        this.environment.push(this.environment.framePointer);
-        this.environment.push(returnAddress);
-        this.environment.push(this.programCounter);
-        this.environment.currentOffset = 3;
+          this.environment.push(this.environment.framePointer);
+          this.environment.push(returnAddress);
+          this.environment.push(this.programCounter);
+          this.environment.currentOffset = 3;
+        } else {
+          console.log("Encountered GLOBAL without entry at index 1");
+        }
         break;
       }
 
@@ -306,6 +309,13 @@ export class Program {
       case "LLL":
         this.environment.push(this.resolveLabel(this.firstArg(command)));
         break;
+  
+      case "STORE":
+      case "SECTION":
+        return true;
+
+      case "FINISH":
+        return false;
 
       default:
         console.log(`Command not implemented: ${command.operation}`);
