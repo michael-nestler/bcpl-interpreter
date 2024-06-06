@@ -11,18 +11,19 @@ export function parseCode(text: string): Command[] {
   let currentCommand: Command | null = null;
   let lastCharacter: [number, number] = [1, 1];
   let quotes = 0;
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === "#") {
+  const normalizedText = text + "\n";
+  for (let i = 0; i < normalizedText.length; i++) {
+    if (normalizedText[i] === "#") {
       comment = true;
       continue;
     }
-    if (text[i] === "\n") {
+    if (normalizedText[i] === "\n") {
       comment = false;
     }
     if (comment) {
       continue;
     }
-    if (quotes % 2 === 0 && text[i].trim().length === 0) {
+    if (quotes % 2 === 0 && normalizedText[i].trim().length === 0) {
       if (currentToken) {
         if (currentCommand) {
           if (isArgument(currentToken)) {
@@ -46,7 +47,7 @@ export function parseCode(text: string): Command[] {
         }
         currentToken = "";
       }
-      if (text[i] === "\n") {
+      if (normalizedText[i] === "\n") {
         line++;
         column = 1;
         quotes = 0;
@@ -55,14 +56,11 @@ export function parseCode(text: string): Command[] {
       }
       continue;
     }
-    if (text[i] === "'") {
+    if (normalizedText[i] === "'") {
       quotes++;
     }
-    currentToken += text[i];
+    currentToken += normalizedText[i];
     column++;
-  }
-  if (currentToken) {
-    lastCharacter = [line, column - 1];
   }
   if (currentCommand) {
     currentCommand.end = lastCharacter;
