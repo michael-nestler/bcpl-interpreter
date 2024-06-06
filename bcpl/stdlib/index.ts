@@ -1,4 +1,5 @@
 import { Program } from "../program";
+import { newline } from "./newline";
 import { rdargs } from "./rdargs";
 import { writef } from "./writef";
 import { writes } from "./writes";
@@ -28,6 +29,7 @@ export function callStdlib(target: number, k: number, args: number[], program: P
 export type stdlibFunctionSignature = ((args: number[], program: Program) => boolean | [boolean, number]); 
 
 export const STDLIB_FUNCTIONS: Map<number, stdlibFunctionSignature> = new Map();
+STDLIB_FUNCTIONS.set(84, newline);
 STDLIB_FUNCTIONS.set(89, writes);
 STDLIB_FUNCTIONS.set(94, writef);
 STDLIB_FUNCTIONS.set(102, rdargs);

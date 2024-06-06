@@ -13,7 +13,7 @@ export function parseCode(text: string): Command[] {
   let quotes = 0;
   const normalizedText = text + "\n";
   for (let i = 0; i < normalizedText.length; i++) {
-    if (normalizedText[i] === "#") {
+    if (normalizedText[i] === "#" && !(normalizedText[i + 1] && (normalizedText[i + 1] >= "0" && normalizedText[i + 1] <= "9" || normalizedText[i + 1] >= "A" && normalizedText[i + 1] <= "Z"))) {
       comment = true;
       continue;
     }
@@ -73,6 +73,9 @@ function parseArgument(argument: string): number {
   if (argument.startsWith("'") && argument.endsWith("'") && argument.length === 3) {
     return argument[1].charCodeAt(0);
   }
+  if (argument.startsWith("#")) {
+    return Number.parseInt(removePrefix(argument, "#"), 16) | 0;
+  }
   const number = Number(removePrefix(argument, "L"));
   if (!Number.isSafeInteger(number)) {
     console.warn(`Invalid argument: ${argument}`);
@@ -84,6 +87,7 @@ function parseArgument(argument: string): number {
 function isArgument(argument: string) {
   return (
     Number.isSafeInteger(Number(removePrefix(argument, "L"))) ||
+    (argument.startsWith("#") && Number.isSafeInteger(Number.parseInt(removePrefix(argument, "#"), 16))) ||
     (argument.startsWith("'") && argument.endsWith("'") && argument.length === 3)
   );
 }

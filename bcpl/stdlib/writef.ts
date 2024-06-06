@@ -31,6 +31,10 @@ export function writef(args: number[], program: Program) {
               formattedString += args[++argumentOffset].toString();
               break;
             }
+            case "c": {
+                formattedString += String.fromCharCode(args[++argumentOffset]);
+                break;
+            }
             default:
               console.log("Invalid format substitution", "%", formatString.charAt(i));
               return false;

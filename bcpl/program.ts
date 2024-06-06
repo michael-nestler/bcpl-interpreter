@@ -1,5 +1,5 @@
 import type { Command } from "./command";
-import { FALSE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, TRUE } from "./constants";
+import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, TRUE } from "./constants";
 import { Environment } from "./environment";
 import { divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
@@ -23,7 +23,8 @@ export class Program {
   returnValue = 0;
   output = "";
   currentDataLabel = 0;
-  arguments = "";
+  // arguments = "2024";
+  arguments = "000638000 706000305 010000040 008712400 090000050 002569100 030000010 105000608 000184000";
 
   next(): boolean {
     const command = this.commands[this.programCounter];
@@ -270,6 +271,41 @@ export class Program {
         this.environment.push(this.resolveLabel(this.firstArg(command)));
         break;
 
+      case "LLG":
+        this.environment.push(this.firstArg(command) + GLOBAL_ADDRESS_SPACE);
+        break;
+      
+      case "STIND":
+        const address = this.environment.pop();
+        const value = this.environment.pop();
+        this.environment.globalVariables[(address | 0 ) - (GLOBAL_ADDRESS_SPACE | 0)] = value;
+        break;
+      
+      case "RES":
+        this.returnValue = this.environment.pop();
+        this.programCounter = this.resolveLabel(this.firstArg(command));
+        break;
+      
+      case "RSTACK":
+        this.environment.currentOffset = this.firstArg(command);
+        this.environment.push(this.returnValue);
+        break;
+
+      case "SWITCHON": {
+        const value = this.environment.pop();
+        const defaultLabel = this.secondArg(command);
+        const casesValues = command.arguments.slice(2).filter((_, index) => index % 2 === 0);
+        const caseLabels = command.arguments.slice(2).filter((_, index) => index % 2 === 1);
+        const caseIndex = casesValues.indexOf(value);
+        if (caseIndex !== -1) {
+          this.programCounter = this.resolveLabel(caseLabels[caseIndex]);
+        } else {
+          this.programCounter = this.resolveLabel(defaultLabel);
+        }
+        break;
+      }
+        
+        
       case "STORE":
       case "SECTION":
         return true;
@@ -285,7 +321,7 @@ export class Program {
   }
 
   private firstArg(command: Command): number {
-    this.require(command.arguments[0] !== undefined, `Expected an argument for command of type ${command.operation}`);
+    this.require(command.arguments[0] !== undefined, `Expected an argument for command of type ${command.operation} at ${command.start} - ${command.end}`);
     return command.arguments[0];
   }
   private secondArg(command: Command): number {
