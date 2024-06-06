@@ -1,4 +1,5 @@
-import { TRUE, WRITEF_ADDRESS, WRITES_ADDRESS } from "./constants";
+import { TRUE } from "./constants";
+import { STDLIB_FUNCTIONS, STDLIB_SPACE } from "./stdlib";
 
 export class Environment {
   stack: number[] = [];
@@ -11,8 +12,9 @@ export class Environment {
   staticVariables: number[] = [];
 
   constructor() {
-    this.globalVariables[89] = WRITES_ADDRESS;
-    this.globalVariables[94] = WRITEF_ADDRESS;
+    for (let stdlibFunction of STDLIB_FUNCTIONS.keys()) {
+      this.globalVariables[stdlibFunction] = (STDLIB_SPACE + stdlibFunction) | 0;
+    }
   }
 
   clear() {

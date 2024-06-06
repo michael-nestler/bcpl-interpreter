@@ -14,7 +14,7 @@ import { firstValueFrom } from "rxjs";
         </button>
         <div popover id="browser-action">
             <div class="browse-bcpl-wrapper">
-                <button type="button" (click)="browseBCPL()">
+                <button type="button">
                     <span class="material-symbols-outlined">feature_search</span>
                     Predefined BCPL
                     <span class="material-symbols-outlined">chevron_right</span>
@@ -51,7 +51,6 @@ export class ControlPanelComponent implements OnInit {
 
     async ngOnInit() {
         const response = await firstValueFrom(this.http.get<string[]>("/assets/bcpl/index.json"));
-        console.log(response);
         this.predefinedPrograms.set(response);
     }
 
@@ -82,10 +81,6 @@ export class ControlPanelComponent implements OnInit {
     reset() {
         this.state = 'paused';
         this.resetProgram.emit();
-    }
-
-    browseBCPL() {
-
     }
 
     async pasteOCODE() {

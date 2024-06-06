@@ -1,5 +1,5 @@
 import type { Command } from "./command";
-import { FALSE, TRUE, WRITEF_ADDRESS, WRITES_ADDRESS } from "./constants";
+import { FALSE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, TRUE } from "./constants";
 import { Environment } from "./environment";
 import { divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
@@ -13,6 +13,7 @@ import {
   saveGlobalVariableFromStack,
   saveLocalVariableFromStack,
 } from "./operations/variables";
+import { callStdlib, isStdlibCall } from "./stdlib";
 
 export class Program {
   environment: Environment = new Environment();
@@ -22,6 +23,7 @@ export class Program {
   returnValue = 0;
   output = "";
   currentDataLabel = 0;
+  arguments = "";
 
   next(): boolean {
     const command = this.commands[this.programCounter];
@@ -47,6 +49,7 @@ export class Program {
         divide(this.environment);
         break;
       case "REM":
+      case "MOD":
         remainder(this.environment);
         break;
       case "PLUS":
@@ -80,6 +83,7 @@ export class Program {
         bitwiseEquality(this.environment);
         break;
       case "NEQV":
+      case "XOR":
         bitwiseInequality(this.environment);
         break;
 
@@ -138,6 +142,9 @@ export class Program {
       case "SG":
         saveGlobalVariableFromStack(this.environment, this.firstArg(command));
         break;
+      case "LLP":
+        this.environment.push(LOCAL_ADDRESS_SPACE + this.firstArg(command) + this.environment.framePointer);
+        break;
       case "INITGL":
         initGlobalVariableToValue(this.environment, this.firstArg(command), this.resolveLabel(this.secondArg(command)));
         break;
@@ -148,13 +155,18 @@ export class Program {
       case "FNAP": {
         const k = this.firstArg(command);
         const returnAddress = this.programCounter;
-        this.programCounter = this.environment.pop();
+        const target = this.environment.pop();
+        if (isStdlibCall(target)) {
+          const result = callStdlib(target, k, this.environment.stack.slice(this.environment.framePointer + k + 3, this.environment.framePointer + this.environment.currentOffset), this);
+          return result;
+        }
 
         const newFramePointer = this.environment.framePointer + k;
         this.environment.stack[newFramePointer] = this.environment.framePointer;
         this.environment.stack[newFramePointer + 1] = returnAddress;
-        this.environment.stack[newFramePointer + 2] = this.programCounter;
+        this.environment.stack[newFramePointer + 2] = target;
         this.environment.framePointer = newFramePointer;
+        this.programCounter = target;
         this.environment.currentOffset -= k;
         break;
       }
@@ -162,77 +174,21 @@ export class Program {
       case "RTAP": {
         const k = this.firstArg(command);
         const target = this.environment.pop();
-        switch (target) {
-          case WRITEF_ADDRESS: {
-            const stringRef = this.environment.stack[this.environment.framePointer + k + 3];
-            const formatString = this.environment.strings.get(stringRef);
-            if (!formatString) {
-              console.error("writef(...) call invoked with invalid string reference", stringRef);
-              return false;
-            }
-            let formattedString = "";
-            let argumentOffset = 3;
-            for (let i = 0; i < formatString.length; i++) {
-              switch (formatString.charAt(i)) {
-                case "%":
-                  switch (formatString.charAt(++i)) {
-                    case "%":
-                      formattedString += "%";
-                      break;
-                    case "i": {
-                      const width = Number(formatString.charAt(++i));
-                      if (!Number.isSafeInteger(width)) {
-                        console.log("Invalid format substitution", "%", "i", formatString.charAt(i));
-                        return false;
-                      }
-                      formattedString += this.environment.stack[this.environment.framePointer + k + ++argumentOffset]
-                        .toString()
-                        .padStart(width);
-                      break;
-                    }
-                    case "n": {
-                      formattedString += this.environment.stack[this.environment.framePointer + k + ++argumentOffset].toString();
-                      break;
-                    }
-                    default:
-                      console.log("Invalid format substitution", "%", formatString.charAt(i));
-                      return false;
-                  }
-                  break;
-                default:
-                  formattedString += formatString.charAt(i);
-              }
-            }
-            this.output += formattedString;
-            this.environment.currentOffset = k;
-            console.log("[stdout]", formattedString);
-            return true;
-          }
-          case WRITES_ADDRESS: {
-            const stringRef = this.environment.stack[this.environment.framePointer + k + 3];
-            const outputtedString = this.environment.strings.get(stringRef);
-            if (!outputtedString) {
-              console.error("writes(...) call invoked with invalid string reference", stringRef);
-              return false;
-            }
-            this.output += outputtedString;
-            console.log("[stdout]", outputtedString);
-            this.environment.currentOffset = k;
-            return true;
-          }
-          default: {
-            const returnAddress = this.programCounter;
-            this.programCounter = target;
+        if (isStdlibCall(target)) {
+          const result = callStdlib(target, k, this.environment.stack.slice(this.environment.framePointer + k + 3, this.environment.framePointer + this.environment.currentOffset), this);
 
-            const newFramePointer = this.environment.framePointer + k;
-            this.environment.stack[newFramePointer] = this.environment.framePointer;
-            this.environment.stack[newFramePointer + 1] = returnAddress;
-            this.environment.stack[newFramePointer + 2] = target;
-            this.environment.framePointer = newFramePointer;
-            this.environment.currentOffset -= k;
-            return true;
-          }
+          return result;
         }
+        const returnAddress = this.programCounter;
+        this.programCounter = target;
+
+        const newFramePointer = this.environment.framePointer + k;
+        this.environment.stack[newFramePointer] = this.environment.framePointer;
+        this.environment.stack[newFramePointer + 1] = returnAddress;
+        this.environment.stack[newFramePointer + 2] = target;
+        this.environment.framePointer = newFramePointer;
+        this.environment.currentOffset -= k;
+        return true;
       }
 
       case "ENTRY":
@@ -295,21 +251,25 @@ export class Program {
       case "ITEMN":
         this.environment.staticVariables.push(this.firstArg(command));
         if (this.currentDataLabel) {
-          this.labels.set(this.currentDataLabel, this.environment.staticVariables.length - 1);
+          this.labels.set(this.currentDataLabel, STATIC_ADDRESS_SPACE + this.environment.staticVariables.length - 1);
           this.currentDataLabel = 0;
         }
         break;
 
       case "RV": {
-        const staticVariable = this.environment.pop();
-        this.environment.push(this.environment.staticVariables[staticVariable]);
+        const address = this.environment.pop();
+        if (address & STATIC_ADDRESS_SPACE) {
+          this.environment.push(this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)]);
+        } else {
+          this.environment.push(this.environment.stack[address]);
+        }
         break;
       }
 
       case "LLL":
         this.environment.push(this.resolveLabel(this.firstArg(command)));
         break;
-  
+
       case "STORE":
       case "SECTION":
         return true;
