@@ -1,7 +1,7 @@
 import type { Command } from "./command";
 import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE, TRUE } from "./constants";
 import { Environment } from "./environment";
-import { divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
+import { absolute, divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
 import { bitwiseEquality, bitwiseInequality, leftShift, logicalAnd, logicalNot, logicalOr, rightShift } from "./operations/logical";
 import { equality, greaterThan, greaterThanOrEqualTo, inequality, lessThan, lessThanOrEqualTo } from "./operations/relations";
@@ -64,6 +64,9 @@ export class Program {
       case "NEG":
         negate(this.environment);
         break;
+      case "ABS":
+        absolute(this.environment);
+        break;
 
       case "LSHIFT":
         leftShift(this.environment);
@@ -115,7 +118,7 @@ export class Program {
         /* Labels are read in the initial pass of the program parser */
         break;
       case "GOTO":
-        this.programCounter = this.firstArg(command);
+        this.programCounter = this.environment.pop();
         break;
       case "JUMP":
         this.programCounter = this.resolveLabel(this.firstArg(command));
@@ -332,6 +335,28 @@ export class Program {
         return true;
       }
 
+      case "PUTBYTE": {
+        const index = this.environment.pop();
+        const address = this.environment.pop();
+        const byteVal = this.environment.pop();
+        let byteMask = 0xff << (index * 8);
+        let shiftedByte = (byteVal & 0xff) << (index * 8);
+        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
+          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] |= byteMask;
+          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] &= shiftedByte;
+        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
+          this.environment.staticVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] |= byteMask;
+          this.environment.staticVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] &= shiftedByte;
+        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
+          console.error("Trying to PUTBYTE a string", address, index, byteVal);
+          return false;
+        } else {
+          this.environment.staticVariables[address] |= byteMask;
+          this.environment.staticVariables[address] &= shiftedByte;
+        }
+        return true;
+      }
+
       case "SL": {
         const labelTarget = this.environment.pop();
         this.labels.set(this.firstArg(command), labelTarget);
@@ -344,7 +369,11 @@ export class Program {
           console.warn("Tried to load unknown label L" + this.firstArg(command), command.start);
           return false;
         }
-        this.environment.push(labelTarget);
+        if ((labelTarget & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
+          this.environment.push(this.environment.staticVariables[(labelTarget | 0) - (STATIC_ADDRESS_SPACE | 0)]);
+        } else {
+          this.environment.push(labelTarget);
+        }
         break;
       }
 

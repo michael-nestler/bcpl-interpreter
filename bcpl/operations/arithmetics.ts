@@ -23,3 +23,7 @@ export function minus(env: Environment) {
 export function negate(env: Environment) {
   env.monadicOperation((a) => -a);
 }
+
+export function absolute(env: Environment) {
+  env.monadicOperation((a) => Math.abs(a | 0) | 0);
+}
