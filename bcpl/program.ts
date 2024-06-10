@@ -112,6 +112,7 @@ export class Program {
 
       case "STACK":
         setStackOffset(this.environment, this.firstArg(command));
+        this.environment.stack.splice(this.environment.framePointer + this.environment.currentOffset);
         break;
 
       case "LAB":

@@ -18,6 +18,8 @@ import { ControlPanelComponent } from "./control-panel/control-panel.component";
     </div>
     {{ stack | json }}
     <br>
+    {{ frame | json }}
+    <br>
     {{ globals | json }}
   `,
   styles: [
@@ -57,6 +59,7 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   breakpoints: boolean[] = [];
   stack: number[] = [];
   globals: number[][] = [];
+  frame: number[][] = [];
 
   ngOnInit() {
     this.updateCodeView();
@@ -64,6 +67,8 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
 
   updateCodeView() {
     this.stack = this.program.environment.stack.slice(0, this.program.environment.framePointer + this.program.environment.currentOffset);
+    this.frame = this.program.environment.stack.slice(this.program.environment.framePointer, this.program.environment.framePointer + this.program.environment.currentOffset)
+      .map((x, i) => x == undefined ? x : [i, x]);
     this.globals = this.program.environment.globalVariables.map((x, i) => x == undefined ? x : [i, x]).filter(x => x != undefined);
     const command = this.program.commands[this.program.programCounter];
     if (command) {

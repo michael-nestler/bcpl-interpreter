@@ -29,7 +29,7 @@ const highlighter = getHighlighter({
         <div class="breakpoints">
           @for (breakpoint of breakpoints; let index = $index; track index) {
             <code class="breakpoint-wrapper">
-              &ZeroWidthSpace;
+              <span class="linenumber">{{ index + 1 }}</span>
               <input class="breakpoint" type="checkbox" [value]="breakpoint" (change)="setBreakpoint($event, index)">
           </code>
           }

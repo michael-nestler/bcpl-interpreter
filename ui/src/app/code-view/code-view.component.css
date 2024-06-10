@@ -1,5 +1,5 @@
 :root {
-    --breakpoint-sidebar-width: 20px;
+    --breakpoint-sidebar-width: 100px;
 }
 
 code-view {
@@ -47,4 +47,8 @@ code-view {
 
 .highlighted-word {
     background-color: olivedrab;
+}
+
+.linenumber {
+    color: #707070;
 }
