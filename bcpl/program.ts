@@ -1,5 +1,5 @@
 import type { Command } from "./command";
-import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, TRUE } from "./constants";
+import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE, TRUE } from "./constants";
 import { Environment } from "./environment";
 import { divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
@@ -197,8 +197,10 @@ export class Program {
       case "ENDPROC":
         break;
 
-      case "SAVE":
+      case "SAVE": {
+        this.environment.currentOffset = this.firstArg(command);
         break;
+      }
 
       case "FNRN": {
         this.returnValue = this.environment.pop();
@@ -224,7 +226,7 @@ export class Program {
         const returnAddress = this.programCounter;
         const labelIndex = command.arguments.slice(1).findIndex((value, index) => value === 1 && index % 2 === 0);
         for (let i = 1; i < command.arguments.length - 1; i += 2) {
-          this.environment.globalVariables[command.arguments[i]] = command.arguments[i + 1];
+          this.environment.globalVariables[command.arguments[i]] = this.resolveLabel(command.arguments[i + 1]);
         }
         if (labelIndex !== -1) {
           this.programCounter = this.resolveLabel(command.arguments[labelIndex + 2]);
@@ -241,29 +243,15 @@ export class Program {
 
       case "LSTR": {
         const string = String.fromCharCode(...command.arguments.slice(1));
-        this.environment.push(this.environment.storeString(string));
+        this.environment.push(STRINGS_ADDRESS_SPACE + this.environment.storeString(string));
         break;
       }
-
-      case "DATALAB":
-        this.currentDataLabel = this.firstArg(command);
-        break;
-
-      case "ITEMN":
-        this.environment.staticVariables.push(this.firstArg(command));
-        if (this.currentDataLabel) {
-          this.labels.set(this.currentDataLabel, STATIC_ADDRESS_SPACE + this.environment.staticVariables.length - 1);
-          this.currentDataLabel = 0;
-        }
-        break;
 
       case "RV": {
         const address = this.environment.pop();
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          console.log('Loading static variable', address, (address | 0) - (STATIC_ADDRESS_SPACE | 0));
           this.environment.push(this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)]);
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          console.log('Loading global variable', address, (address | 0) - (GLOBAL_ADDRESS_SPACE | 0));
           this.environment.push(this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)]);
         } else {
           this.environment.push(this.environment.stack[address]);
@@ -278,18 +266,25 @@ export class Program {
       case "LLG":
         this.environment.push(this.firstArg(command) + GLOBAL_ADDRESS_SPACE);
         break;
-      
-      case "STIND":
+
+      case "STIND": {
         const address = this.environment.pop();
         const value = this.environment.pop();
-        this.environment.globalVariables[(address | 0 ) - (GLOBAL_ADDRESS_SPACE | 0)] = value;
+        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
+          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] = value;
+        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
+          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] = value;
+        } else {
+          this.environment.stack[address] = value;
+        }
         break;
-      
+      }
+
       case "RES":
         this.returnValue = this.environment.pop();
         this.programCounter = this.resolveLabel(this.firstArg(command));
         break;
-      
+
       case "RSTACK":
         this.environment.currentOffset = this.firstArg(command);
         this.environment.push(this.returnValue);
@@ -308,10 +303,55 @@ export class Program {
         }
         break;
       }
-        
-        
+
+      case "GETBYTE": {
+        const index = this.environment.pop();
+        const address = this.environment.pop();
+        let intVal = 0;
+        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
+          intVal = this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)];
+        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
+          intVal = this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)];
+        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
+          const string = this.environment.strings.get((address | 0) - (STRINGS_ADDRESS_SPACE | 0));
+          if (!string) {
+            console.warn("Invalid GETBYTE for missing string", (address | 0) - (STRINGS_ADDRESS_SPACE | 0));
+            this.environment.push(0);
+            return true;
+          }
+          if (index === 0) {
+            this.environment.push(string.length);
+          } else {
+            this.environment.push(string.charCodeAt(index - 1));
+          }
+          return true;
+        } else {
+          intVal = this.environment.stack[address];
+        }
+        this.environment.push((intVal >> (index * 8)) & 0xff)
+        return true;
+      }
+
+      case "SL": {
+        const labelTarget = this.environment.pop();
+        this.labels.set(this.firstArg(command), labelTarget);
+        break;
+      }
+
+      case "LL": {
+        const labelTarget = this.labels.get(this.firstArg(command));
+        if (labelTarget === undefined) {
+          console.warn("Tried to load unknown label L" + this.firstArg(command), command.start);
+          return false;
+        }
+        this.environment.push(labelTarget);
+        break;
+      }
+
       case "STORE":
       case "SECTION":
+      case "DATALAB":
+      case "ITEMN":
         return true;
 
       case "FINISH":

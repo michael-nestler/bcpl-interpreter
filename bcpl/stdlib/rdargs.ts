@@ -1,8 +1,8 @@
-import { FALSE, TRUE } from "../constants";
+import { FALSE, STRINGS_ADDRESS_SPACE, TRUE } from "../constants";
 import { Program } from "../program";
 
 export function rdargs(args: number[], program: Program): [boolean, number] {
-    const argString = program.environment.strings.get(args[0])!;
+    const argString = program.environment.strings.get((args[0] | 0) - (STRINGS_ADDRESS_SPACE | 0))!;
     const argvPointer = args[1];
     const bound = args[2];
 

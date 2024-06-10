@@ -1,8 +1,9 @@
+import { STRINGS_ADDRESS_SPACE } from "../constants";
 import { Program } from "../program";
 
 export function writef(args: number[], program: Program) {
     const stringRef = args[0];
-    const formatString = program.environment.strings.get(stringRef);
+    const formatString = program.environment.strings.get((stringRef | 0) - (STRINGS_ADDRESS_SPACE | 0));
     if (!formatString) {
       console.error("writef(...) call invoked with invalid string reference", stringRef);
       return false;
