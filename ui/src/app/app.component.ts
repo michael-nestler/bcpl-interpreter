@@ -17,6 +17,8 @@ import { ControlPanelComponent } from "./control-panel/control-panel.component";
       <textarea readonly class="output-view">{{ program.output }}</textarea>
     </div>
     {{ stack | json }}
+    <br>
+    {{ globals | json }}
   `,
   styles: [
     `
@@ -54,13 +56,15 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   highlightedSection = signal<[number, number, number, number]>([-1, -1, -1, -1]);
   breakpoints: boolean[] = [];
   stack: number[] = [];
+  globals: number[][] = [];
 
   ngOnInit() {
     this.updateCodeView();
   }
 
   updateCodeView() {
-    this.stack = this.program.environment.stack;
+    this.stack = this.program.environment.stack.slice(0, this.program.environment.framePointer + this.program.environment.currentOffset);
+    this.globals = this.program.environment.globalVariables.map((x, i) => x == undefined ? x : [i, x]).filter(x => x != undefined);
     const command = this.program.commands[this.program.programCounter];
     if (command) {
       this.highlightedSection.set([...command.start, ...command.end]);

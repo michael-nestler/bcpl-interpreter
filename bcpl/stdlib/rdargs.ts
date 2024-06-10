@@ -1,4 +1,3 @@
-import { flattenDiagnosticMessageText } from "typescript";
 import { FALSE, TRUE } from "../constants";
 import { Program } from "../program";
 

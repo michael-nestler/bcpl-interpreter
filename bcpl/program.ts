@@ -121,7 +121,7 @@ export class Program {
         this.programCounter = this.resolveLabel(this.firstArg(command));
         break;
       case "JT":
-        if ((this.environment.pop() | 0) === (TRUE | 0)) {
+        if ((this.environment.pop() | 0) !== (FALSE | 0)) {
           this.programCounter = this.resolveLabel(this.firstArg(command));
         }
         break;
@@ -259,8 +259,12 @@ export class Program {
 
       case "RV": {
         const address = this.environment.pop();
-        if (address & STATIC_ADDRESS_SPACE) {
+        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
+          console.log('Loading static variable', address, (address | 0) - (STATIC_ADDRESS_SPACE | 0));
           this.environment.push(this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)]);
+        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
+          console.log('Loading global variable', address, (address | 0) - (GLOBAL_ADDRESS_SPACE | 0));
+          this.environment.push(this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)]);
         } else {
           this.environment.push(this.environment.stack[address]);
         }
