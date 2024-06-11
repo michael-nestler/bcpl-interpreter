@@ -1,32 +1,4 @@
 import { Component, ViewEncapsulation, effect, input, output } from "@angular/core";
-import { getHighlighter } from "shiki";
-
-const highlighter = getHighlighter({
-  langs: [
-    JSON.parse(
-      JSON.stringify({
-        name: "ocode",
-        displayName: "OCODE",
-        scopeName: "ocode",
-        patterns: [
-          { include: "#comments" },
-          { include: "#characters" },
-          { include: "#labels" },
-          { include: "#numbers" },
-          { include: "#operators" },
-        ],
-        repository: {
-          comments: { patterns: [{ begin: "#", end: "$", name: "comment" }] },
-          characters: { patterns: [{ match: "\\b'[a-zA-Z %*+]'\\b", name: "constant.numeric" }] },
-          labels: { patterns: [{ match: "\\bL\\d+\\b", name: "variable.parameter" }] },
-          numbers: { patterns: [{ match: "\\b\\d+\\b", name: "constant.numeric" }] },
-          operators: { patterns: [{ match: "\\w", name: "keyword" }] },
-        },
-      }),
-    ),
-  ],
-  themes: ["tokyo-night"],
-});
 
 @Component({
   selector: "code-view",
