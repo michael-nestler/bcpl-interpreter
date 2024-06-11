@@ -1,7 +1,10 @@
 import { Program } from "../program";
+import { findoutput } from "./findoutput";
 import { newline } from "./newline";
 import { rdargs } from "./rdargs";
+import { rdch, unrdch } from "./rdch";
 import { sys } from "./sys";
+import { wrch } from "./wrch";
 import { writef } from "./writef";
 import { writes } from "./writes";
 
@@ -31,6 +34,10 @@ export type stdlibFunctionSignature = (args: number[], program: Program) => bool
 
 export const STDLIB_FUNCTIONS: Map<number, stdlibFunctionSignature> = new Map();
 STDLIB_FUNCTIONS.set(3, sys);
+STDLIB_FUNCTIONS.set(38, rdch);
+STDLIB_FUNCTIONS.set(40, unrdch);
+STDLIB_FUNCTIONS.set(41, wrch);
+STDLIB_FUNCTIONS.set(49, findoutput);
 STDLIB_FUNCTIONS.set(84, newline);
 STDLIB_FUNCTIONS.set(89, writes);
 STDLIB_FUNCTIONS.set(94, writef);

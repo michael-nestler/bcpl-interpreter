@@ -68,7 +68,6 @@ export function parseCode(text: string): Command[] {
     column++;
     if (normalizedText[i] === "'") {
       quotes++;
-      console.log(currentToken, quotes);
     }
   }
   if (currentCommand) {
