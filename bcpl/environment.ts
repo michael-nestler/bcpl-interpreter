@@ -19,6 +19,9 @@ export class Environment {
 
   clear() {
     this.stack = [];
+    this.globalVariables = [];
+    this.strings.clear();
+    this.staticVariables = [];
     this.framePointer = 0;
     this.currentOffset = 0;
   }
