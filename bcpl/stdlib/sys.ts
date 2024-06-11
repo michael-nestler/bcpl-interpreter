@@ -1,3 +1,4 @@
+import { RESULT2_GLOBAL_INDEX } from "../constants";
 import { Program } from "../program";
 
 const OP_WRC = 11;
@@ -12,7 +13,10 @@ export function sys(args: number[], program: Program): boolean | [boolean, numbe
     }
     case OP_MULDIV: {
       const [_, x, y, z] = args;
-      return [true, (x * y) / z];
+      const result = Math.floor((x * y) / z);
+      const remainder = x*y - result * z;
+      program.environment.globalVariables[RESULT2_GLOBAL_INDEX] = remainder | 0;
+      return [true, result | 0];
     }
   }
   console.error("Unknown sys op", op, args);
