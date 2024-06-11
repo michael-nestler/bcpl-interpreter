@@ -30,7 +30,7 @@ export function parseCode(text: string): Command[] {
     if (comment) {
       continue;
     }
-    if (quotes % 2 === 0 && normalizedText[i].trim().length === 0) {
+    if ((!quotes || quotes >= 2) && normalizedText[i].trim().length === 0) {
       if (currentToken) {
         if (currentCommand) {
           if (isArgument(currentToken)) {
@@ -53,6 +53,7 @@ export function parseCode(text: string): Command[] {
           lastCharacter = [line, column - 1];
         }
         currentToken = "";
+        quotes = 0;
       }
       if (normalizedText[i] === "\n") {
         line++;
@@ -63,11 +64,12 @@ export function parseCode(text: string): Command[] {
       }
       continue;
     }
-    if (normalizedText[i] === "'") {
-      quotes++;
-    }
     currentToken += normalizedText[i];
     column++;
+    if (normalizedText[i] === "'") {
+      quotes++;
+      console.log(currentToken, quotes);
+    }
   }
   if (currentCommand) {
     currentCommand.end = lastCharacter;

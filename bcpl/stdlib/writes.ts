@@ -5,7 +5,7 @@ export function writes(args: number[], program: Program) {
   const stringRef = args[0];
   const outputtedString = program.environment.strings.get((stringRef | 0) - (STRINGS_ADDRESS_SPACE | 0));
   if (!outputtedString) {
-    console.error("writes(...) call invoked with invalid string reference", stringRef);
+    console.error("writes(...) call invoked with invalid string reference", stringRef, program.environment.strings.keys());
     return false;
   }
   program.output += outputtedString;

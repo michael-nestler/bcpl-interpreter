@@ -41,7 +41,7 @@ export function rdargs(args: number[], program: Program): [boolean, number] {
         numOffset++;
       } else {
         const strRef = program.environment.storeString(value);
-        program.environment.stack[argvPointer + options.indexOf(option)] = strRef | 0;
+        program.environment.stack[argvPointer + options.indexOf(option)] = strRef | 0 + STRINGS_ADDRESS_SPACE | 0;
       }
       remainingOptions.splice(remainingOptions.indexOf(option), 1);
     }

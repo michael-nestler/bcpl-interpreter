@@ -409,6 +409,10 @@ export class Program {
         break;
       }
 
+      case "QUERY":
+        this.environment.push(0x1234_5678);
+        break;
+
       case "STORE":
       case "SECTION":
       case "DATALAB":
