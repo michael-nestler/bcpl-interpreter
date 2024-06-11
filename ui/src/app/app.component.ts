@@ -21,6 +21,8 @@ import { ControlPanelComponent } from "./control-panel/control-panel.component";
     {{ frame | json }}
     <br>
     {{ globals | json }}
+    <br>
+    {{ statics | json }}
   `,
   styles: [
     `
@@ -60,6 +62,7 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   stack: number[] = [];
   globals: number[][] = [];
   frame: number[][] = [];
+  statics: number[][] = [];
 
   ngOnInit() {
     this.updateCodeView();
@@ -71,6 +74,7 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
       .slice(this.program.environment.framePointer, this.program.environment.framePointer + this.program.environment.currentOffset)
       .map((x, i) => [i, x]);
     this.globals = this.program.environment.globalVariables.map((x, i) => [i, x]).filter(Boolean);
+    this.statics = [...this.program.environment.staticVariables.entries()];
     const command = this.program.commands[this.program.programCounter];
     if (command) {
       this.highlightedSection.set([...command.start, ...command.end]);

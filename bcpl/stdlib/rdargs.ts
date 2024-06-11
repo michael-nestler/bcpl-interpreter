@@ -8,7 +8,6 @@ export function rdargs(args: number[], program: Program): [boolean, number] {
     return [false, 0];
   }
   const argvPointer = args[1];
-  const bound = args[2];
 
   const fragments = argString.split(",");
   const options = fragments.map((fragment) => {

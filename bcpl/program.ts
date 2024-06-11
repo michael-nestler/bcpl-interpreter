@@ -364,35 +364,48 @@ export class Program {
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] |= byteMask;
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] &= shiftedByte;
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          this.environment.staticVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] |= byteMask;
-          this.environment.staticVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] &= shiftedByte;
+          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] |= byteMask;
+          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] &= shiftedByte;
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
           console.error("Trying to PUTBYTE a string", address, index, byteVal);
           return false;
         } else {
-          this.environment.staticVariables[address] |= byteMask;
-          this.environment.staticVariables[address] &= shiftedByte;
+          this.environment.stack[address] |= byteMask;
+          this.environment.stack[address] &= shiftedByte;
         }
         return true;
       }
 
       case "SL": {
-        const labelTarget = this.environment.pop();
-        this.labels.set(this.firstArg(command), labelTarget);
+        const value = this.environment.pop();
+        const address = this.resolveLabel(this.firstArg(command));
+        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
+          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] = value | 0;
+        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
+          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] = value | 0;
+        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
+          console.error("Trying to SL a string", address, value);
+          return false;
+        } else {
+          this.environment.stack[address] = value | 0;
+        }
         break;
       }
 
       case "LL": {
-        const labelTarget = this.labels.get(this.firstArg(command));
-        if (labelTarget === undefined) {
-          console.warn(`Tried to load unknown label L${this.firstArg(command)}`, command.start);
+        const address = this.resolveLabel(this.firstArg(command));
+        let value: number;
+        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
+          value = this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)];
+        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
+          value = this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)];
+        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
+          console.error("Trying to LL a string", address);
           return false;
-        }
-        if ((labelTarget & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          this.environment.push(this.environment.staticVariables[(labelTarget | 0) - (STATIC_ADDRESS_SPACE | 0)]);
         } else {
-          this.environment.push(labelTarget);
+          value = this.environment.stack[address];
         }
+        this.environment.push(value | 0);
         break;
       }
 
