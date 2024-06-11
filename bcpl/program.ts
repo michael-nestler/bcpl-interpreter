@@ -212,7 +212,9 @@ export class Program {
         this.programCounter = this.environment.stack[this.environment.framePointer + 1];
         this.environment.currentOffset = this.environment.framePointer - oldFramePointer;
         this.environment.framePointer = oldFramePointer;
-        this.environment.push(this.returnValue);
+        if (this.commands[this.programCounter - 1]?.operation === 'FNAP') {
+          this.environment.push(this.returnValue);
+        }
         this.environment.stack.splice(this.environment.framePointer + this.environment.currentOffset);
         break;
       }
