@@ -67,9 +67,10 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
 
   updateCodeView() {
     this.stack = this.program.environment.stack.slice(0, this.program.environment.framePointer + this.program.environment.currentOffset);
-    this.frame = this.program.environment.stack.slice(this.program.environment.framePointer, this.program.environment.framePointer + this.program.environment.currentOffset)
-      .map((x, i) => x == undefined ? x : [i, x]);
-    this.globals = this.program.environment.globalVariables.map((x, i) => x == undefined ? x : [i, x]).filter(x => x != undefined);
+    this.frame = this.program.environment.stack
+      .slice(this.program.environment.framePointer, this.program.environment.framePointer + this.program.environment.currentOffset)
+      .map((x, i) => [i, x]);
+    this.globals = this.program.environment.globalVariables.map((x, i) => [i, x]).filter(Boolean);
     const command = this.program.commands[this.program.programCounter];
     if (command) {
       this.highlightedSection.set([...command.start, ...command.end]);

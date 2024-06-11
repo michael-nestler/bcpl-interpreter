@@ -12,7 +12,7 @@ export class Environment {
   staticVariables: number[] = [];
 
   constructor() {
-    for (let stdlibFunction of STDLIB_FUNCTIONS.keys()) {
+    for (const stdlibFunction of STDLIB_FUNCTIONS.keys()) {
       this.globalVariables[stdlibFunction] = (STDLIB_SPACE + stdlibFunction) | 0;
     }
   }

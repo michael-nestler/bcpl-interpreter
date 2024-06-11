@@ -162,7 +162,15 @@ export class Program {
         const returnAddress = this.programCounter;
         const target = this.environment.pop();
         if (isStdlibCall(target)) {
-          const result = callStdlib(target, k, this.environment.stack.slice(this.environment.framePointer + k + 3, this.environment.framePointer + this.environment.currentOffset), this);
+          const result = callStdlib(
+            target,
+            k,
+            this.environment.stack.slice(
+              this.environment.framePointer + k + 3,
+              this.environment.framePointer + this.environment.currentOffset,
+            ),
+            this,
+          );
           return result;
         }
 
@@ -180,7 +188,15 @@ export class Program {
         const k = this.firstArg(command);
         const target = this.environment.pop();
         if (isStdlibCall(target)) {
-          const result = callStdlib(target, k, this.environment.stack.slice(this.environment.framePointer + k + 3, this.environment.framePointer + this.environment.currentOffset), this);
+          const result = callStdlib(
+            target,
+            k,
+            this.environment.stack.slice(
+              this.environment.framePointer + k + 3,
+              this.environment.framePointer + this.environment.currentOffset,
+            ),
+            this,
+          );
 
           return result;
         }
@@ -212,7 +228,7 @@ export class Program {
         this.programCounter = this.environment.stack[this.environment.framePointer + 1];
         this.environment.currentOffset = this.environment.framePointer - oldFramePointer;
         this.environment.framePointer = oldFramePointer;
-        if (this.commands[this.programCounter - 1]?.operation === 'FNAP') {
+        if (this.commands[this.programCounter - 1]?.operation === "FNAP") {
           this.environment.push(this.returnValue);
         }
         this.environment.stack.splice(this.environment.framePointer + this.environment.currentOffset);
@@ -334,7 +350,7 @@ export class Program {
         } else {
           intVal = this.environment.stack[address];
         }
-        this.environment.push((intVal >> (index * 8)) & 0xff)
+        this.environment.push((intVal >> (index * 8)) & 0xff);
         return true;
       }
 
@@ -342,8 +358,8 @@ export class Program {
         const index = this.environment.pop();
         const address = this.environment.pop();
         const byteVal = this.environment.pop();
-        let byteMask = 0xff << (index * 8);
-        let shiftedByte = (byteVal & 0xff) << (index * 8);
+        const byteMask = 0xff << (index * 8);
+        const shiftedByte = (byteVal & 0xff) << (index * 8);
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] |= byteMask;
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] &= shiftedByte;
@@ -369,7 +385,7 @@ export class Program {
       case "LL": {
         const labelTarget = this.labels.get(this.firstArg(command));
         if (labelTarget === undefined) {
-          console.warn("Tried to load unknown label L" + this.firstArg(command), command.start);
+          console.warn(`Tried to load unknown label L${this.firstArg(command)}`, command.start);
           return false;
         }
         if ((labelTarget & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
@@ -397,18 +413,15 @@ export class Program {
   }
 
   private firstArg(command: Command): number {
-    this.require(command.arguments[0] !== undefined, `Expected an argument for command of type ${command.operation} at ${command.start} - ${command.end}`);
+    this.require(
+      command.arguments[0] !== undefined,
+      `Expected an argument for command of type ${command.operation} at ${command.start} - ${command.end}`,
+    );
     return command.arguments[0];
   }
   private secondArg(command: Command): number {
     this.require(command.arguments[1] !== undefined, `Expected a second argument for command of type ${command.operation}`);
     return command.arguments[1];
-  }
-
-  private lastArg(command: Command): number {
-    const arg = command.arguments.at(-1);
-    this.require(arg !== undefined, `Expected an argument for command of type ${command.operation}`);
-    return arg;
   }
 
   private resolveLabel(labelIndex: number): number {

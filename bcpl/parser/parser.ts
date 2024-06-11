@@ -11,11 +11,16 @@ export function parseCode(text: string): Command[] {
   let currentCommand: Command | null = null;
   let lastCharacter: [number, number] = [1, 1];
   let quotes = 0;
-  const normalizedText = text + "\n";
+  const normalizedText = `${text}\n`;
   for (let i = 0; i < normalizedText.length; i++) {
-    if (normalizedText[i] === "#"
-     && !quotes
-     && !(normalizedText[i + 1] && (normalizedText[i + 1] >= "0" && normalizedText[i + 1] <= "9" || normalizedText[i + 1] >= "A" && normalizedText[i + 1] <= "Z"))) {
+    if (
+      normalizedText[i] === "#" &&
+      !quotes &&
+      !(
+        normalizedText[i + 1] &&
+        ((normalizedText[i + 1] >= "0" && normalizedText[i + 1] <= "9") || (normalizedText[i + 1] >= "A" && normalizedText[i + 1] <= "Z"))
+      )
+    ) {
       comment = true;
       continue;
     }
