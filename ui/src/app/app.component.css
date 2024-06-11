@@ -1,0 +1,20 @@
+.main-view {
+    display: flex;
+    position: relative;
+    height: 60%;
+}
+
+.code-view {
+    flex: 1;
+    overflow: auto;
+    background-color: rgb(26, 27, 38);
+}
+
+.output-view {
+    flex: 1;
+    background-color: #242630;
+    border: 0;
+    resize: none;
+    color: #a3a3a3;
+    font-family: 'Courier New', Courier, monospace;
+}

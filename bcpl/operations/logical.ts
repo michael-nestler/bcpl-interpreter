@@ -1,11 +1,11 @@
 import type { Environment } from "../environment";
 
 export function leftShift(env: Environment) {
-  env.diadicOperation((a, b) => b >= 32 ? 0 : a << b);
+  env.diadicOperation((a, b) => (b >= 32 ? 0 : a << b));
 }
 
 export function rightShift(env: Environment) {
-  env.diadicOperation((a, b) => b >= 32 ? 0 : a >>> b);
+  env.diadicOperation((a, b) => (b >= 32 ? 0 : a >>> b));
 }
 
 export function logicalAnd(env: Environment) {

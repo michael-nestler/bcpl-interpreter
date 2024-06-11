@@ -27,14 +27,17 @@ import { firstValueFrom } from "rxjs";
             </div>
             <button type="button" (click)="pasteOCODE()"><span class="material-symbols-outlined">content_paste_go</span> Paste OCODE</button>
         </div>
-        <button type="button" [disabled]="state !== 'paused'" (click)="next()">
-            <div class="material-symbols-outlined">step</div>
-        </button>
         <button type="button" [disabled]="state !== 'paused'" (click)="resumeExecution()">
             <div class="material-symbols-outlined">play_arrow</div>
         </button>
         <button type="button" (click)="reset()">
             <div class="material-symbols-outlined">stop</div>
+        </button>
+        <button type="button" [disabled]="state !== 'paused'" (click)="next()">
+            <div class="material-symbols-outlined">step</div>
+        </button>
+        <button type="button" [disabled]="state !== 'paused'" (click)="stepOver()">
+            <div class="material-symbols-outlined">step_over</div>
         </button>
     `,
   styleUrl: "./control-panel.component.css",
@@ -71,6 +74,23 @@ export class ControlPanelComponent implements OnInit {
       }
       const line = this.program().commands[this.program().programCounter]?.start?.[0];
       if (this.breakpoints()[line - 1]) {
+        paused = true;
+        break;
+      }
+    }
+    this.state = paused ? "paused" : "finished";
+    this.updateCodeView.emit();
+  }
+
+  stepOver() {
+    const start = this.program().programCounter;
+    if (!["FNAP", "RTAP"].includes(this.program().commands[start]?.operation)) {
+      return this.next();
+    }
+    let paused = false;
+    while (this.program().next()) {
+      const line = this.program().commands[this.program().programCounter]?.start?.[0];
+      if (this.program().programCounter === start + 1 || this.breakpoints()[line - 1]) {
         paused = true;
         break;
       }

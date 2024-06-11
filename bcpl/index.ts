@@ -4,8 +4,8 @@ import { Program } from "./program";
 
 export { Program } from "./program";
 
-export function loadProgram(ocodeSrc: string): Program {
-  const commands = parseCode(ocodeSrc);
+export function loadProgram(ocodeSrc: string): [Program, string] {
+  const { commands, styledHtml } = parseCode(ocodeSrc);
 
   const program = new Program();
   program.commands = commands;
@@ -21,5 +21,5 @@ export function loadProgram(ocodeSrc: string): Program {
   if (["ENTRY", "SECTION"].includes(commands[0]?.operation)) {
     program.programCounter = commands.length - 1;
   }
-  return program;
+  return [program, styledHtml];
 }

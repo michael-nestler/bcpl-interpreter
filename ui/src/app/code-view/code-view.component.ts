@@ -1,6 +1,4 @@
-import { Component, ViewEncapsulation, computed, effect, input, output, signal } from "@angular/core";
-import type { SafeHtml } from "@angular/platform-browser";
-import { DomSanitizer } from "@angular/platform-browser";
+import { Component, ViewEncapsulation, effect, input, output } from "@angular/core";
 import { getHighlighter } from "shiki";
 
 const highlighter = getHighlighter({
@@ -39,48 +37,33 @@ const highlighter = getHighlighter({
             <code class="breakpoint-wrapper">
               <span class="linenumber">{{ index + 1 }}</span>
               <input class="breakpoint" type="checkbox" [value]="breakpoint" (change)="setBreakpoint($event, index)">
-          </code>
+            </code>
           }
         </div>
-        <div class="shiki-wrapper" [innerHtml]="highlightedCodeHtml()"></div>
+        <pre class="highlighted-code"><code [innerHTML]="code()"></code></pre>
     `,
   styleUrl: "./code-view.component.css",
   encapsulation: ViewEncapsulation.None,
 })
 export class CodeViewComponent {
   code = input.required<string>();
-  highlightedSection = input.required<[number, number, number, number] | null>();
-  highlightedCodeHtml = signal<SafeHtml>("");
-
-  lineNumbers = computed(() => this.code().split("\n").length);
+  highlightedCommand = input.required<number>();
+  lineNumbers = input.required<number>();
   breakpoints: boolean[] = [];
   breakpointsChanged = output<boolean[]>();
 
-  constructor(private readonly domSanitizer: DomSanitizer) {
+  constructor() {
     effect(() => {
       this.breakpoints = Array.from({ length: this.lineNumbers() }, () => false);
     });
-    effect(() => this.reloadCodeHighlighting(this.code(), this.highlightedSection() ?? [-1, -1, -1, -1]));
+    effect(() => this.reloadCodeHighlighting(this.code(), this.highlightedCommand()));
   }
 
-  async reloadCodeHighlighting(code: string, [startLine, startColumn, endLine, endColumn]: [number, number, number, number]) {
-    const html = this.domSanitizer.bypassSecurityTrustHtml(
-      await (await highlighter).codeToHtml(code, {
-        lang: "ocode",
-        theme: "tokyo-night",
-        decorations:
-          startLine !== -1
-            ? [
-                {
-                  start: { line: startLine - 1, character: startColumn - 1 },
-                  end: { line: endLine - 1, character: endColumn },
-                  properties: { class: "highlighted-word" },
-                },
-              ]
-            : [],
-      }),
-    );
-    this.highlightedCodeHtml.set(html);
+  async reloadCodeHighlighting(code: string, highlightedCommand: number) {
+    const oldHighlights = document.getElementsByClassName("highlighted-word");
+    Array.prototype.forEach.call(oldHighlights, (element) => element.classList.remove("highlighted-word"));
+    const highlightedElements = document.getElementsByClassName(`command-${highlightedCommand}`);
+    Array.prototype.forEach.call(highlightedElements, (element) => element.classList.add("highlighted-word"));
     setTimeout(() => document.getElementsByClassName("highlighted-word")[0]?.scrollIntoView({ block: "nearest" }));
   }
 

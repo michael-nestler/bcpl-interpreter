@@ -7,8 +7,6 @@ code-view {
 }
 
 .breakpoints {
-    display: flex;
-    flex-direction: column;
     position: absolute;
     font-family: monospace;
     width: var(--breakpoint-sidebar-width);
@@ -32,23 +30,38 @@ code-view {
     opacity: 1;
 }
 
-.shiki-wrapper {
-    height: 100%;
-}
-
-.shiki {
+.highlighted-code {
+    color: #A9B1D6;
     box-sizing: border-box;
     margin: 0;
     padding-left: var(--breakpoint-sidebar-width);
     min-width: 100%;
     min-height: 100%;
     width: min-content;
+    height: min-content;
 }
 
 .highlighted-word {
-    background-color: olivedrab;
+    background-color: #445d1d;
 }
 
 .linenumber {
     color: #707070;
+}
+
+.command-arg {
+    color: #FF9E64;
+}
+
+.comment {
+    color: #707070;
+}
+
+.command-arg-char {
+    color: #30b980;
+}
+
+.command-arg-label {
+    color: #6ea1d9;
+    font-weight: bold;
 }

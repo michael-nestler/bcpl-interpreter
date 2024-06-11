@@ -14,7 +14,7 @@ export function sys(args: number[], program: Program): boolean | [boolean, numbe
     case OP_MULDIV: {
       const [_, x, y, z] = args;
       const result = Math.floor((x * y) / z);
-      const remainder = x*y - result * z;
+      const remainder = x * y - result * z;
       program.environment.globalVariables[RESULT2_GLOBAL_INDEX] = remainder | 0;
       return [true, result | 0];
     }

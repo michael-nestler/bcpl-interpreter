@@ -2,7 +2,7 @@
     display: block;
     background-color: rgb(26, 27, 38);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --button-color: #403d02;
+    --button-color: #343640;
     --font-color: #a3a3a3;
     
     button {
