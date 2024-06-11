@@ -1,4 +1,6 @@
 import { Program } from "../program";
+import { dat_to_strings } from "./dat_to_strings";
+import { datstamp } from "./datstamp";
 import { findoutput } from "./findoutput";
 import { newline } from "./newline";
 import { rdargs } from "./rdargs";
@@ -42,3 +44,5 @@ STDLIB_FUNCTIONS.set(84, newline);
 STDLIB_FUNCTIONS.set(89, writes);
 STDLIB_FUNCTIONS.set(94, writef);
 STDLIB_FUNCTIONS.set(102, rdargs);
+STDLIB_FUNCTIONS.set(109, datstamp);
+STDLIB_FUNCTIONS.set(110, dat_to_strings);

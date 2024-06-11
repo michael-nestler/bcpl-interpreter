@@ -34,6 +34,16 @@ export function writef(args: number[], program: Program) {
             formattedString += String.fromCharCode(args[++argumentOffset]);
             break;
           }
+          case "s": {
+            const strRef = program.environment.stack[args[++argumentOffset]];
+            const str = program.environment.strings.get(strRef - STRINGS_ADDRESS_SPACE);
+            if (!str) {
+              console.log("Invalid str ref for %%s substitution", strRef);
+              return false;
+            }
+            formattedString += str;
+            break;
+          }
           default:
             console.log("Invalid format substitution", "%", formatString.charAt(i));
             return false;
