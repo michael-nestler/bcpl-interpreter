@@ -23,6 +23,14 @@ describe("logical operations", () => {
     expect(environment.topValue()).toBe(0b0011000100010000_0000000000000000);
   });
 
+  test("largeLeftShift", () => {
+    environment.push(1);
+    environment.push(32);
+    leftShift(environment);
+
+    expect(environment.topValue()).toBe(0);
+  });
+
   test("logicalOr", () => {
     environment.push(0b0111000110001000);
     environment.push(0b0011010110010010);
