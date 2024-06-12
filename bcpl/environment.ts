@@ -2,9 +2,9 @@ import { TRUE } from "./constants";
 import { STDLIB_FUNCTIONS, STDLIB_SPACE } from "./stdlib";
 
 export class Environment {
-  stack: number[] = [];
+  stack: number[] = [0];
   framePointer = 0;
-  currentOffset = 0;
+  currentOffset = 1;
 
   globalVariables: number[] = [];
 
@@ -18,12 +18,12 @@ export class Environment {
   }
 
   clear() {
-    this.stack = [];
+    this.stack = [0];
     this.globalVariables = [];
     this.strings.clear();
     this.staticVariables = [];
     this.framePointer = 0;
-    this.currentOffset = 0;
+    this.currentOffset = 1;
   }
 
   push(value: number) {

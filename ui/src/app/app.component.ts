@@ -3,11 +3,12 @@ import { Component, type OnInit, signal } from "@angular/core";
 import { Program, loadProgram } from "bcpl";
 import { CodeViewComponent } from "./code-view/code-view.component";
 import { ControlPanelComponent } from "./control-panel/control-panel.component";
+import { StackViewComponent } from "./stack-view/stack-view.component";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [JsonPipe, CodeViewComponent, ControlPanelComponent],
+  imports: [JsonPipe, CodeViewComponent, ControlPanelComponent, StackViewComponent],
   template: `
     <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()" (loadCode)="loadCode($event)" (resetProgram)="resetProgram()"></control-panel>
     <div class="main-view">
@@ -16,9 +17,8 @@ import { ControlPanelComponent } from "./control-panel/control-panel.component";
       </div>
       <textarea readonly class="output-view">{{ program.output }}</textarea>
     </div>
+    <stack-view [program]="programCopy"></stack-view>
     {{ stack | json }}
-    <br>
-    {{ frame | json }}
     <br>
     {{ globals | json }}
     <br>
@@ -38,6 +38,7 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   highlightedCode = "";
   title = "ui";
   program!: Program;
+  programCopy!: Program;
   highlightedCommand = signal<number>(0);
   lineNumbers!: number;
   breakpoints: boolean[] = [];
@@ -67,6 +68,7 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
       this.highlightedCommand.set(this.program.programCounter);
     }
     this.lineNumbers = this.program.commands.at(-1)?.start[0] || 1;
+    this.programCopy = Object.assign(Object.create(Program.prototype), this.program);
   }
 
   loadCode(code: string) {

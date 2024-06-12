@@ -110,9 +110,9 @@ export class Program {
         greaterThanOrEqualTo(this.environment);
         break;
 
+      case "SAVE":
       case "STACK":
         setStackOffset(this.environment, this.firstArg(command));
-        this.environment.stack.splice(this.environment.framePointer + this.environment.currentOffset);
         break;
 
       case "LAB":
@@ -217,11 +217,6 @@ export class Program {
       case "ENDPROC":
         break;
 
-      case "SAVE": {
-        this.environment.currentOffset = this.firstArg(command);
-        break;
-      }
-
       case "FNRN": {
         this.returnValue = this.environment.pop();
         const oldFramePointer = this.environment.stack[this.environment.framePointer];
@@ -256,6 +251,7 @@ export class Program {
           this.environment.push(this.environment.framePointer);
           this.environment.push(returnAddress);
           this.environment.push(this.programCounter);
+          this.environment.framePointer = this.environment.currentOffset - 3;
           this.environment.currentOffset = 3;
         } else {
           console.log("Encountered GLOBAL without entry at index 1");

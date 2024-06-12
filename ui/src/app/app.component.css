@@ -18,3 +18,11 @@
     color: #a3a3a3;
     font-family: 'Courier New', Courier, monospace;
 }
+
+control-panel {
+    height: 27px;
+}
+
+stack-view {
+    height: calc(40% - 27px);
+}

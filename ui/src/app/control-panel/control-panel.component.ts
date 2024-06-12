@@ -1,4 +1,3 @@
-import { JsonPipe } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, inject, input, output, signal } from "@angular/core";
 import { Program } from "bcpl";
@@ -7,7 +6,6 @@ import { firstValueFrom } from "rxjs";
 @Component({
   selector: "control-panel",
   standalone: true,
-  imports: [JsonPipe],
   template: `
         <button type="button" popovertarget="browser-action">
             <div class="material-symbols-outlined">folder_open</div>
