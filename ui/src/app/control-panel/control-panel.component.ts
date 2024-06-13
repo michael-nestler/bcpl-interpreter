@@ -30,6 +30,7 @@ import { firstValueFrom } from "rxjs";
         </button>
         <div popover id="settings">
           <div>Arguments <input type="text" (change)="setArguments($event)"></div>
+          <div>Input <textarea (change)="setInput($event)"></textarea></div>
         </div>
         <button type="button" [disabled]="state !== 'paused'" (click)="resumeExecution()">
             <div class="material-symbols-outlined">play_arrow</div>
@@ -56,6 +57,7 @@ export class ControlPanelComponent implements OnInit {
   predefinedPrograms = signal<string[]>([]);
   http = inject(HttpClient);
   arguments = output<string>();
+  inputChange = output<string>();
   stopSignal = false;
 
   async ngOnInit() {
@@ -137,6 +139,12 @@ export class ControlPanelComponent implements OnInit {
   setArguments(event: Event) {
     if (event.target instanceof HTMLInputElement) {
       this.arguments.emit(event.target.value);
+    }
+  }
+
+  setInput(event: Event) {
+    if (event.target instanceof HTMLTextAreaElement) {
+      this.inputChange.emit(event.target.value);
     }
   }
 }

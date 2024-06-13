@@ -34,10 +34,12 @@ export function writef(args: number[], program: Program) {
             formattedString += String.fromCharCode(args[++argumentOffset]);
             break;
           }
-          case "s": {
+          case "s":
+          case "S": {
             const strRef = program.environment.stack[args[++argumentOffset]];
-            const str = program.environment.strings.get(strRef - STRINGS_ADDRESS_SPACE);
-            if (!str) {
+            const str = program.environment.strings.get(strRef - STRINGS_ADDRESS_SPACE | 0)
+              || program.environment.strings.get((args[argumentOffset] | 0) - (STRINGS_ADDRESS_SPACE | 0));
+            if (str === undefined) {
               console.log("Invalid str ref for %%s substitution", strRef);
               return false;
             }
