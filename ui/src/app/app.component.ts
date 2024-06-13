@@ -10,7 +10,7 @@ import { StackViewComponent } from "./stack-view/stack-view.component";
   standalone: true,
   imports: [JsonPipe, CodeViewComponent, ControlPanelComponent, StackViewComponent],
   template: `
-    <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()" (loadCode)="loadCode($event)" (resetProgram)="resetProgram()"></control-panel>
+    <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()" (loadCode)="loadCode($event)" (resetProgram)="resetProgram()" (arguments)="updateArguments($event)"></control-panel>
     <div class="main-view">
       <div class="code-view">
         <code-view [code]="highlightedCode" [highlightedCommand]="highlightedCommand()" [lineNumbers]="lineNumbers" (breakpointsChanged)="breakpoints = $event"></code-view>
@@ -47,6 +47,7 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   frame: number[][] = [];
   statics: number[][] = [];
   strings: [number, string][] = [];
+  arguments = "";
 
   ngOnInit() {
     const [program, styledHtml] = loadProgram(this.code);
@@ -74,7 +75,7 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   loadCode(code: string) {
     this.highlightedCommand.set(0);
     this.code = code;
-    const [program, styledHtml] = loadProgram(code);
+    const [program, styledHtml] = loadProgram(code, this.arguments);
     this.program = program;
     this.highlightedCode = styledHtml;
     this.updateCodeView();
@@ -82,5 +83,10 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
 
   resetProgram() {
     this.loadCode(this.code);
+  }
+
+  updateArguments(args: string) {
+    this.arguments = args;
+    this.program.arguments = args;
   }
 }

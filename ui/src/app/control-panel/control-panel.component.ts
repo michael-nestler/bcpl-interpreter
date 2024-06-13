@@ -25,6 +25,12 @@ import { firstValueFrom } from "rxjs";
             </div>
             <button type="button" (click)="pasteOCODE()"><span class="material-symbols-outlined">content_paste_go</span> Paste OCODE</button>
         </div>
+        <button type="button" popovertarget="settings">
+            <div class="material-symbols-outlined">settings</div>
+        </button>
+        <div popover id="settings">
+          <div>Arguments <input type="text" (change)="setArguments($event)"></div>
+        </div>
         <button type="button" [disabled]="state !== 'paused'" (click)="resumeExecution()">
             <div class="material-symbols-outlined">play_arrow</div>
         </button>
@@ -49,6 +55,8 @@ export class ControlPanelComponent implements OnInit {
   state: "paused" | "finished" | "running" = "paused";
   predefinedPrograms = signal<string[]>([]);
   http = inject(HttpClient);
+  arguments = output<string>();
+  stopSignal = false;
 
   async ngOnInit() {
     const response = await firstValueFrom(this.http.get<string[]>("/assets/bcpl/index.json"));
@@ -56,11 +64,13 @@ export class ControlPanelComponent implements OnInit {
   }
 
   next() {
+    this.stopSignal = false;
     this.program().next();
     this.updateCodeView.emit();
   }
 
   async resumeExecution() {
+    this.stopSignal = false;
     let count = 0;
     let paused = false;
     this.state = "running";
@@ -75,12 +85,17 @@ export class ControlPanelComponent implements OnInit {
         paused = true;
         break;
       }
+      if (this.stopSignal) {
+        paused = true;
+        break;
+      }
     }
     this.state = paused ? "paused" : "finished";
     this.updateCodeView.emit();
   }
 
   stepOver() {
+    this.stopSignal = false;
     const start = this.program().programCounter;
     if (!["FNAP", "RTAP"].includes(this.program().commands[start]?.operation)) {
       return this.next();
@@ -92,6 +107,10 @@ export class ControlPanelComponent implements OnInit {
         paused = true;
         break;
       }
+      if (this.stopSignal) {
+        paused = true;
+        break;
+      }
     }
     this.state = paused ? "paused" : "finished";
     this.updateCodeView.emit();
@@ -100,6 +119,7 @@ export class ControlPanelComponent implements OnInit {
   reset() {
     this.state = "paused";
     this.resetProgram.emit();
+    this.stopSignal = true;
   }
 
   async pasteOCODE() {
@@ -112,5 +132,11 @@ export class ControlPanelComponent implements OnInit {
     const text = await firstValueFrom(this.http.get(`/assets/bcpl/${name}.ocode`, { responseType: "text" }));
     this.loadCode.emit(text);
     this.state = "paused";
+  }
+
+  setArguments(event: Event) {
+    if (event.target instanceof HTMLInputElement) {
+      this.arguments.emit(event.target.value);
+    }
   }
 }

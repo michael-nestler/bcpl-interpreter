@@ -23,8 +23,9 @@ export class Program {
   returnValue = 0;
   output = "";
   currentDataLabel = 0;
-  // arguments = "2024";
-  arguments = "000638000 706000305 010000040 008712400 090000050 002569100 030000010 105000608 000184000";
+  arguments = "";
+  // easter: "2024";
+  // sudoku: "000638000 706000305 010000040 008712400 090000050 002569100 030000010 105000608 000184000";
 
   next(): boolean {
     const command = this.commands[this.programCounter];

@@ -4,11 +4,12 @@ import { Program } from "./program";
 
 export { Program } from "./program";
 
-export function loadProgram(ocodeSrc: string): [Program, string] {
+export function loadProgram(ocodeSrc: string, args: string = ""): [Program, string] {
   const { commands, styledHtml } = parseCode(ocodeSrc);
 
   const program = new Program();
   program.commands = commands;
+  program.arguments = args;
   commands.forEach((command, index) => {
     if (command.operation === "LAB" || command.operation === "ENTRY") {
       program.labels.set(command.arguments[0], index);
