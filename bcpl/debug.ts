@@ -2,7 +2,6 @@ import * as readline from "node:readline/promises";
 import type { Command } from "./command";
 import type { Environment } from "./environment";
 import type { Program } from "./program";
-import { env } from "bun";
 
 const rl = readline.createInterface({
   input: process.stdin,
