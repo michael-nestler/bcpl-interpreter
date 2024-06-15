@@ -9,7 +9,7 @@ export interface ParsedProgram {
 
 export function parseCode(text: string): ParsedProgram {
   const commands: Command[] = [];
-  let styledHtml = "";
+  let styledHtml = "<table><tr><td><input class='breakpoint' type='checkbox' data-linenumber='1'></td><td class='linenumber'>1</td><td>";
   let comment = false;
   let line = 1;
   let column = 1;
@@ -75,6 +75,11 @@ export function parseCode(text: string): ParsedProgram {
         line++;
         column = 1;
         quotes = 0;
+        if (i === normalizedText.length - 1) {
+          styledHtml += "</td></tr></table>";
+        } else {
+          styledHtml += `</td></tr><tr><td><input class='breakpoint' type='checkbox' data-linenumber='${line}'></td><td class='linenumber'>${line}</td><td>`;
+        }
       } else {
         column++;
       }

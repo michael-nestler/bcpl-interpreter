@@ -1,32 +1,13 @@
-:root {
-    --breakpoint-sidebar-width: 100px;
-}
-
-code-view {
-    position: relative;
-}
-
-.breakpoints {
-    position: absolute;
-    font-family: monospace;
-    width: var(--breakpoint-sidebar-width);
-    height: 100%;
-}
-
-.breakpoint-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.breakpoint-wrapper .breakpoint {
-    font-family: monospace;
+.breakpoint {
+    display: block;
+    margin: auto;
     opacity: 0;
     transition: opacity 100ms ease-in;
 }
 
-.breakpoint-wrapper .breakpoint:checked,
-.breakpoint-wrapper:hover .breakpoint {
+.breakpoint:checked,
+td:hover .breakpoint,
+td:has(+ td:hover):has(> .breakpoint) .breakpoint {
     opacity: 1;
 }
 
@@ -34,7 +15,6 @@ code-view {
     color: #A9B1D6;
     box-sizing: border-box;
     margin: 0;
-    padding-left: var(--breakpoint-sidebar-width);
     min-width: 100%;
     min-height: 100%;
     width: min-content;
@@ -47,6 +27,7 @@ code-view {
 
 .linenumber {
     color: #707070;
+    user-select: none;
 }
 
 .command-arg {

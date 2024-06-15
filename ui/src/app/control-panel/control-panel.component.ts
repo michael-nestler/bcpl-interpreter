@@ -67,7 +67,8 @@ export class ControlPanelComponent implements OnInit {
 
   next() {
     this.stopSignal = false;
-    this.program().next();
+    const more = this.program().next();
+    this.state = more ? "paused" : "finished";
     this.updateCodeView.emit();
   }
 

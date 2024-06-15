@@ -1,3 +1,4 @@
+STACK 0
 LN 9
 JUMP L2
 ENTRY L1 8 't' 'e' 's' 't' 'f' 'u' 'n' 'c'

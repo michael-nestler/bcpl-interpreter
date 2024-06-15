@@ -7,7 +7,7 @@ import type { Program } from "../program";
 export async function runCode(path: string, debug = false): Promise<Program> {
   console.time("Test run");
   const testScript = await readFile(resolve(import.meta.dir, path), { encoding: "utf8" });
-  const program = loadProgram(testScript);
+  const [program] = loadProgram(testScript);
   do {
     if (debug) {
       await debugPrompt(program);

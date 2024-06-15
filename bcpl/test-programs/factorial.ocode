@@ -1,3 +1,4 @@
+STACK 0
 LN 1    # factorial[n] at stack index 0
 LN 1    # n at stack index 1
 LAB L1

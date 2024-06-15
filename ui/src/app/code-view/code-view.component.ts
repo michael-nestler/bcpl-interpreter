@@ -1,18 +1,11 @@
-import { Component, ViewEncapsulation, effect, input, output } from "@angular/core";
+import { Component, ViewEncapsulation, computed, effect, inject, input, output } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "code-view",
   standalone: true,
   template: `
-        <div class="breakpoints">
-          @for (breakpoint of breakpoints; let index = $index; track index) {
-            <code class="breakpoint-wrapper">
-              <span class="linenumber">{{ index + 1 }}</span>
-              <input class="breakpoint" type="checkbox" [value]="breakpoint" (change)="setBreakpoint($event, index)">
-            </code>
-          }
-        </div>
-        <pre class="highlighted-code"><code [innerHTML]="code()"></code></pre>
+        <pre class="highlighted-code"><code [innerHTML]="sanitizedCode()" (click)="setBreakpoint($event)"></code></pre>
     `,
   styleUrl: "./code-view.component.css",
   encapsulation: ViewEncapsulation.None,
@@ -23,6 +16,8 @@ export class CodeViewComponent {
   lineNumbers = input.required<number>();
   breakpoints: boolean[] = [];
   breakpointsChanged = output<boolean[]>();
+  sanitizer = inject(DomSanitizer);
+  sanitizedCode = computed(() => this.sanitizer.bypassSecurityTrustHtml(this.code()));
 
   constructor() {
     effect(() => {
@@ -39,8 +34,9 @@ export class CodeViewComponent {
     setTimeout(() => document.getElementsByClassName("highlighted-word")[0]?.scrollIntoView({ block: "nearest" }));
   }
 
-  setBreakpoint(event: Event, index: number) {
+  setBreakpoint(event: Event) {
     if (event.target instanceof HTMLInputElement) {
+      const index = Number(event.target.getAttribute("data-linenumber")) - 1;
       this.breakpoints[index] = event.target.checked;
       this.breakpointsChanged.emit(this.breakpoints);
     }
