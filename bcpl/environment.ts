@@ -1,4 +1,4 @@
-import { STACK_SIZE, TRUE } from "./constants";
+import { GLOBAL_ADDRESS_SPACE, STACK_SIZE, TRUE } from "./constants";
 import { STDLIB_FUNCTIONS, STDLIB_SPACE } from "./stdlib";
 
 export class Environment {
@@ -6,20 +6,20 @@ export class Environment {
   framePointer = 0;
   currentOffset = 1;
 
-  globalVariables: number[] = [];
-
   strings = new Map<number, string>();
   staticVariables: number[] = [];
 
   constructor() {
     for (const stdlibFunction of STDLIB_FUNCTIONS.keys()) {
-      this.globalVariables[stdlibFunction] = (STDLIB_SPACE + stdlibFunction) | 0;
+      this.setGlobalVariable(stdlibFunction, (STDLIB_SPACE + stdlibFunction) | 0);
     }
   }
 
   clear() {
     this.stack.fill(0);
-    this.globalVariables = [];
+    for (const stdlibFunction of STDLIB_FUNCTIONS.keys()) {
+      this.setGlobalVariable(stdlibFunction, (STDLIB_SPACE + stdlibFunction) | 0);
+    }
     this.strings.clear();
     this.staticVariables = [];
     this.framePointer = 0;
@@ -69,5 +69,13 @@ export class Environment {
 
   stackSlice(): number[] {
     return Array.from(this.stack.slice(0, this.framePointer + this.currentOffset).values());
+  }
+
+  setGlobalVariable(index: number, value: number) {
+    this.stack[GLOBAL_ADDRESS_SPACE + index] = value;
+  }
+
+  getGlobalVariable(index: number) {
+    return this.stack[GLOBAL_ADDRESS_SPACE + index];
   }
 }

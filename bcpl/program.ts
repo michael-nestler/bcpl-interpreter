@@ -245,7 +245,7 @@ export class Program {
         const returnAddress = this.programCounter;
         const labelIndex = command.arguments.slice(1).findIndex((value, index) => value === 1 && index % 2 === 0);
         for (let i = 1; i < command.arguments.length - 1; i += 2) {
-          this.environment.globalVariables[command.arguments[i]] = this.resolveLabel(command.arguments[i + 1]);
+          this.environment.setGlobalVariable(command.arguments[i], this.resolveLabel(command.arguments[i + 1]));
         }
         if (labelIndex !== -1) {
           this.programCounter = this.resolveLabel(command.arguments[labelIndex + 2]);
@@ -271,8 +271,6 @@ export class Program {
         const address = this.environment.pop();
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
           this.environment.push(this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)]);
-        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          this.environment.push(this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)]);
         } else {
           this.environment.push(this.environment.stack[address]);
         }
@@ -292,8 +290,6 @@ export class Program {
         const value = this.environment.pop();
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] = value;
-        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] = value;
         } else {
           this.environment.stack[address] = value;
         }
@@ -331,7 +327,7 @@ export class Program {
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
           intVal = this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)];
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          intVal = this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)];
+          intVal = this.environment.stack[address];
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
           const string = this.environment.strings.get((address | 0) - (STRINGS_ADDRESS_SPACE | 0));
           if (!string) {
@@ -362,8 +358,8 @@ export class Program {
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] |= byteMask;
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] &= shiftedByte;
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] |= byteMask;
-          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] &= shiftedByte;
+          this.environment.stack[address] |= byteMask;
+          this.environment.stack[address] &= shiftedByte;
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
           console.error("Trying to PUTBYTE a string", address, index, byteVal);
           return false;
@@ -380,7 +376,7 @@ export class Program {
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
           this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] = value | 0;
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)] = value | 0;
+          this.environment.stack[address] = value | 0;
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
           console.error("Trying to SL a string", address, value);
           return false;
@@ -396,7 +392,7 @@ export class Program {
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
           value = this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)];
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          value = this.environment.globalVariables[(address | 0) - (GLOBAL_ADDRESS_SPACE | 0)];
+          value = this.environment.stack[address];
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
           console.error("Trying to LL a string", address);
           return false;

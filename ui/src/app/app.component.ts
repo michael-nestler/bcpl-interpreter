@@ -20,8 +20,6 @@ import { StackViewComponent } from "./stack-view/stack-view.component";
     <stack-view [program]="programCopy"></stack-view>
     {{ stack | json }}
     <br>
-    {{ globals | json }}
-    <br>
     {{ statics | json }}
     <br>
     {{ strings | json }}
@@ -62,7 +60,6 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
     this.frame = this.stack
       .slice(this.program.environment.framePointer, this.program.environment.framePointer + this.program.environment.currentOffset)
       .map((x, i) => [i, x]);
-    this.globals = this.program.environment.globalVariables.map((x, i) => [i, x]).filter(Boolean);
     this.statics = [...this.program.environment.staticVariables.entries()];
     this.strings = [...this.program.environment.strings.entries()];
     const command = this.program.commands[this.program.programCounter];

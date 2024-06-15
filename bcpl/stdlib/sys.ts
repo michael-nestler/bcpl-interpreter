@@ -15,7 +15,7 @@ export function sys(args: Int32Array, program: Program): boolean | [boolean, num
       const [_, x, y, z] = args;
       const result = Math.floor((x * y) / z);
       const remainder = x * y - result * z;
-      program.environment.globalVariables[RESULT2_GLOBAL_INDEX] = remainder | 0;
+      program.environment.setGlobalVariable(RESULT2_GLOBAL_INDEX, remainder);
       return [true, result | 0];
     }
   }

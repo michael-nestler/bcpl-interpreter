@@ -9,13 +9,13 @@ export function saveLocalVariableFromStack(env: Environment, variableIndex: numb
 }
 
 export function loadGlobalVariableToStack(env: Environment, variableIndex: number) {
-  env.push(env.globalVariables[variableIndex]);
+  env.push(env.getGlobalVariable(variableIndex));
 }
 
 export function saveGlobalVariableFromStack(env: Environment, variableIndex: number) {
-  env.globalVariables[variableIndex] = env.pop();
+  env.setGlobalVariable(variableIndex, env.pop());
 }
 
 export function initGlobalVariableToValue(env: Environment, variableIndex: number, value: number) {
-  env.globalVariables[variableIndex] = value;
+  env.setGlobalVariable(variableIndex, value);
 }
