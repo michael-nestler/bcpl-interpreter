@@ -6,8 +6,6 @@ export class Environment {
   framePointer = 0;
   currentOffset = 1;
 
-  strings = new Map<number, string>();
-
   constructor() {
     for (const stdlibFunction of STDLIB_FUNCTIONS.keys()) {
       this.setGlobalVariable(stdlibFunction, (STDLIB_SPACE + stdlibFunction) | 0);
@@ -19,7 +17,6 @@ export class Environment {
     for (const stdlibFunction of STDLIB_FUNCTIONS.keys()) {
       this.setGlobalVariable(stdlibFunction, (STDLIB_SPACE + stdlibFunction) | 0);
     }
-    this.strings.clear();
     this.framePointer = 0;
     this.currentOffset = 1;
   }
@@ -57,12 +54,6 @@ export class Environment {
     this.stack[leftOffset] = operation(this.stack[leftOffset], this.stack[rightOffset]) & TRUE;
 
     this.currentOffset = this.currentOffset - 1;
-  }
-
-  storeString(string: string): number {
-    const key = Math.floor(Math.random() * 0xffff);
-    this.strings.set(key, string);
-    return key;
   }
 
   stackSlice(): number[] {

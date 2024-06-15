@@ -29,6 +29,8 @@ export class Program {
   input = "";
   // procode 155 10 5 115 116 97 114 116 156 3 136 1 153 151 12 152 7 138 15 102 97 99 116 40 37 110 41 32 61 32 37 105 52 10 134 3 152 12 134 3 133 11 10 9 135 94 42 4 151 15 134 3 136 1 17 143 3 134 3 136 5 23 148 12 151 14 151 13 152 3 136 0 157 136 0 157 163 155 11 4 102 97 99 116 156 4 136 0 134 3 19 149 16 136 1 157 151 16 152 7 134 3 136 1 18 133 11 10 4 134 3 14 157 136 0 157 163 152 3 153 70 1 1 10
   inputOffset = 0;
+  stringAddresses = new Map<number, number>();
+  stringIndex = 0;
 
   next(): boolean {
     const command = this.commands[this.programCounter];
@@ -262,8 +264,12 @@ export class Program {
       }
 
       case "LSTR": {
-        const string = String.fromCharCode(...command.arguments.slice(1));
-        this.environment.push(STRINGS_ADDRESS_SPACE + this.environment.storeString(string));
+        const address = this.stringAddresses.get(this.programCounter - 1);
+        if (!address) {
+          console.log("Unknown LSTR at pc", this.programCounter - 1, command);
+          return false;
+        }
+        this.environment.push(address);
         break;
       }
 
@@ -315,28 +321,7 @@ export class Program {
       case "GETBYTE": {
         const index = this.environment.pop();
         const address = this.environment.pop();
-        let intVal = 0;
-        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          intVal = this.environment.stack[address];
-        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          intVal = this.environment.stack[address];
-        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
-          const string = this.environment.strings.get((address | 0) - (STRINGS_ADDRESS_SPACE | 0));
-          if (!string) {
-            console.warn("Invalid GETBYTE for missing string", (address | 0) - (STRINGS_ADDRESS_SPACE | 0));
-            this.environment.push(0);
-            return true;
-          }
-          if (index === 0) {
-            this.environment.push(string.length);
-          } else {
-            this.environment.push(string.charCodeAt(index - 1));
-          }
-          return true;
-        } else {
-          intVal = this.environment.stack[address];
-        }
-        this.environment.push((intVal >> (index * 8)) & 0xff);
+        this.environment.push(this.getByte(address, index));
         return true;
       }
 
@@ -344,21 +329,7 @@ export class Program {
         const index = this.environment.pop();
         const address = this.environment.pop();
         const byteVal = this.environment.pop();
-        const byteMask = 0xff << (index * 8);
-        const shiftedByte = (byteVal & 0xff) << (index * 8);
-        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          this.environment.stack[address] |= byteMask;
-          this.environment.stack[address] &= shiftedByte;
-        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          this.environment.stack[address] |= byteMask;
-          this.environment.stack[address] &= shiftedByte;
-        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
-          console.error("Trying to PUTBYTE a string", address, index, byteVal);
-          return false;
-        } else {
-          this.environment.stack[address] |= byteMask;
-          this.environment.stack[address] &= shiftedByte;
-        }
+        this.putByte(address, index, byteVal);
         return true;
       }
 
@@ -413,6 +384,40 @@ export class Program {
         return false;
     }
     return true;
+  }
+
+  getByte(address: number, index: number) {
+    const intVal = this.environment.stack[address + Math.floor(index / 4)];
+    return (intVal >> ((index % 4) * 8)) & 0xff;
+  }
+
+  getString(stringRef: number) {
+    const length = this.getByte(stringRef, 0);
+    let result = "";
+    for (let i = 1; i <= length; i++) {
+      result += String.fromCharCode(this.getByte(stringRef, i));
+    }
+    return result;
+  }
+
+  putByte(address: number, index: number, value: number) {
+    const byteMask = 0xff << ((index % 4) * 8);
+    const shiftedByte = (value & 0xff) << (index * 8);
+    this.environment.stack[address + Math.floor(index / 4)] &= ~byteMask;
+    this.environment.stack[address + Math.floor(index / 4)] |= shiftedByte;
+  }
+
+  putString(value: number[] | string): number {
+    if (typeof value === "string") {
+      const strValue = [value.length, ...[...value].map((x) => x.charCodeAt(0))];
+      return this.putString(strValue);
+    }
+    const addr = STRINGS_ADDRESS_SPACE + this.stringIndex;
+    for (const [index, arg] of value.entries()) {
+      this.putByte(addr, index, arg);
+    }
+    this.stringIndex += Math.ceil(value.length / 4);
+    return addr;
   }
 
   private firstArg(command: Command): number {

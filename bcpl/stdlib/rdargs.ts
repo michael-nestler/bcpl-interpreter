@@ -2,7 +2,7 @@ import { FALSE, STRINGS_ADDRESS_SPACE, TRUE } from "../constants";
 import { Program } from "../program";
 
 export function rdargs(args: Int32Array, program: Program): [boolean, number] {
-  const argString = program.environment.strings.get((args[0] | 0) - (STRINGS_ADDRESS_SPACE | 0));
+  const argString = program.getString(args[0]);
   if (!argString) {
     console.warn("rdargs called with unknown string", args[0] | 0);
     return [false, 0];
@@ -40,8 +40,8 @@ export function rdargs(args: Int32Array, program: Program): [boolean, number] {
         program.environment.stack[argvPointer + numOffset] = Number(value) | 0;
         numOffset++;
       } else {
-        const strRef = program.environment.storeString(value);
-        program.environment.stack[argvPointer + options.indexOf(option)] = strRef | (0 + STRINGS_ADDRESS_SPACE) | 0;
+        const strRef = program.putString(value);
+        program.environment.stack[argvPointer + options.indexOf(option)] = strRef;
       }
       remainingOptions.splice(remainingOptions.indexOf(option), 1);
     }

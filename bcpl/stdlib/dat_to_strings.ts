@@ -1,4 +1,3 @@
-import { STRINGS_ADDRESS_SPACE } from "../constants";
 import { Program } from "../program";
 import { MILLISECONDS_IN_DAY } from "./datstamp";
 
@@ -11,9 +10,9 @@ export function dat_to_strings(args: Int32Array, program: Program) {
   const dateStr = date.toLocaleDateString("de", { day: "2-digit", month: "short", year: "numeric" });
   const timeStr = date.toLocaleTimeString("de");
   const dayOfWeekStr = date.toLocaleDateString("de", { weekday: "long" });
-  const dateStrRef = program.environment.storeString(dateStr) + STRINGS_ADDRESS_SPACE;
-  const timeStrRef = program.environment.storeString(timeStr) + STRINGS_ADDRESS_SPACE;
-  const dayOfWeekStrRef = program.environment.storeString(dayOfWeekStr) + STRINGS_ADDRESS_SPACE;
+  const dateStrRef = program.putString(dateStr);
+  const timeStrRef = program.putString(timeStr);
+  const dayOfWeekStrRef = program.putString(dayOfWeekStr);
   program.environment.stack[resultVectorAddress] = dateStrRef;
   program.environment.stack[resultVectorAddress + 5] = timeStrRef;
   program.environment.stack[resultVectorAddress + 10] = dayOfWeekStrRef;

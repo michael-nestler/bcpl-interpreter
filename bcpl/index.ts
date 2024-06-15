@@ -1,4 +1,4 @@
-import { STATIC_ADDRESS_SPACE } from "./constants";
+import { STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "./constants";
 import { parseCode } from "./parser/parser";
 import { Program } from "./program";
 
@@ -20,6 +20,9 @@ export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, 
     } else if (command.operation === "ITEMN") {
       program.environment.setStaticVariable(staticVariables, command.arguments[0]);
       staticVariables++;
+    } else if (command.operation === "LSTR") {
+      const address = program.putString(command.arguments);
+      program.stringAddresses.set(index, address);
     }
   });
   if (["ENTRY", "SECTION"].includes(commands[0]?.operation)) {

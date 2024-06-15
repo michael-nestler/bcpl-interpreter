@@ -19,8 +19,6 @@ import { StackViewComponent } from "./stack-view/stack-view.component";
     </div>
     <stack-view [program]="programCopy"></stack-view>
     {{ stack | json }}
-    <br>
-    {{ strings | json }}
   `,
   styleUrl: "./app.component.css",
 })
@@ -39,10 +37,6 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   lineNumbers!: number;
   breakpoints: boolean[] = [];
   stack: number[] = [];
-  globals: number[][] = [];
-  frame: number[][] = [];
-  statics: number[][] = [];
-  strings: [number, string][] = [];
   arguments = "";
   input = "";
 
@@ -55,10 +49,6 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
 
   updateCodeView() {
     this.stack = this.program.environment.stackSlice();
-    this.frame = this.stack
-      .slice(this.program.environment.framePointer, this.program.environment.framePointer + this.program.environment.currentOffset)
-      .map((x, i) => [i, x]);
-    this.strings = [...this.program.environment.strings.entries()];
     const command = this.program.commands[this.program.programCounter];
     if (command) {
       this.highlightedCommand.set(this.program.programCounter);
