@@ -1,5 +1,5 @@
 import { Program } from "../program";
 
-export function endread(args: number[], program: Program) {
+export function endread(args: Int32Array, program: Program) {
   return true;
 }

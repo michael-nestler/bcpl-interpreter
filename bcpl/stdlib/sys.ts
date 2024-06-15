@@ -4,7 +4,7 @@ import { Program } from "../program";
 const OP_WRC = 11;
 const OP_MULDIV = 26;
 
-export function sys(args: number[], program: Program): boolean | [boolean, number] {
+export function sys(args: Int32Array, program: Program): boolean | [boolean, number] {
   const op = args[0];
   switch (op) {
     case OP_WRC: {

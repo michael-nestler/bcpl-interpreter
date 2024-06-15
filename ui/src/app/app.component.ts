@@ -58,8 +58,8 @@ ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
   }
 
   updateCodeView() {
-    this.stack = this.program.environment.stack.slice(0, this.program.environment.framePointer + this.program.environment.currentOffset);
-    this.frame = this.program.environment.stack
+    this.stack = this.program.environment.stackSlice();
+    this.frame = this.stack
       .slice(this.program.environment.framePointer, this.program.environment.framePointer + this.program.environment.currentOffset)
       .map((x, i) => [i, x]);
     this.globals = this.program.environment.globalVariables.map((x, i) => [i, x]).filter(Boolean);

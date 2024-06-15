@@ -1,7 +1,7 @@
 import { FALSE, STRINGS_ADDRESS_SPACE, TRUE } from "../constants";
 import { Program } from "../program";
 
-export function rdargs(args: number[], program: Program): [boolean, number] {
+export function rdargs(args: Int32Array, program: Program): [boolean, number] {
   const argString = program.environment.strings.get((args[0] | 0) - (STRINGS_ADDRESS_SPACE | 0));
   if (!argString) {
     console.warn("rdargs called with unknown string", args[0] | 0);

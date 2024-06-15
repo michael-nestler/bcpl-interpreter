@@ -1,5 +1,5 @@
 import { Program } from "../program";
 
-export function selectinput(args: number[], program: Program) {
+export function selectinput(args: Int32Array, program: Program) {
   return true;
 }

@@ -12,12 +12,10 @@ files=(\
     echo \
     enlarge \
     fact \
-    hello \
     procode \
     sortdemo \
     sortlines \
     sudoku \
-    swtest \
 )
 
 for file in ${files[@]}; do

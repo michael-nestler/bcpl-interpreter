@@ -22,7 +22,7 @@ export function isStdlibCall(target: number) {
   return Boolean(target & STDLIB_SPACE);
 }
 
-export function callStdlib(target: number, k: number, args: number[], program: Program) {
+export function callStdlib(target: number, k: number, args: Int32Array, program: Program) {
   const stdlibFunction = STDLIB_FUNCTIONS.get((target | 0) - (STDLIB_SPACE | 0));
   if (!stdlibFunction) {
     console.error("Unknown stdlib function", target);
@@ -38,7 +38,7 @@ export function callStdlib(target: number, k: number, args: number[], program: P
   return result;
 }
 
-export type stdlibFunctionSignature = (args: number[], program: Program) => boolean | [boolean, number];
+export type stdlibFunctionSignature = (args: Int32Array, program: Program) => boolean | [boolean, number];
 
 export const STDLIB_FUNCTIONS: Map<number, stdlibFunctionSignature> = new Map();
 STDLIB_FUNCTIONS.set(3, sys);

@@ -1,8 +1,8 @@
-import { TRUE } from "./constants";
+import { STACK_SIZE, TRUE } from "./constants";
 import { STDLIB_FUNCTIONS, STDLIB_SPACE } from "./stdlib";
 
 export class Environment {
-  stack: number[] = [0];
+  stack: Int32Array = new Int32Array(STACK_SIZE);
   framePointer = 0;
   currentOffset = 1;
 
@@ -18,7 +18,7 @@ export class Environment {
   }
 
   clear() {
-    this.stack = [0];
+    this.stack.fill(0);
     this.globalVariables = [];
     this.strings.clear();
     this.staticVariables = [];
@@ -35,13 +35,13 @@ export class Environment {
   pop(): number {
     const offset = this.framePointer + this.currentOffset - 1;
     const value = this.stack[offset];
-    delete this.stack[offset];
+    this.stack[offset] = 0;
     this.currentOffset--;
     return value;
   }
 
   topValue(): number {
-    return this.stack[this.framePointer + this.currentOffset - 1];
+    return this.stack[this.framePointer + this.currentOffset - 1] | 0;
   }
 
   monadicOperation(operation: (a: number) => number) {
@@ -65,5 +65,9 @@ export class Environment {
     const key = Math.floor(Math.random() * 0xffff);
     this.strings.set(key, string);
     return key;
+  }
+
+  stackSlice(): number[] {
+    return Array.from(this.stack.slice(0, this.framePointer + this.currentOffset).values());
   }
 }

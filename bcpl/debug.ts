@@ -2,6 +2,7 @@ import * as readline from "node:readline/promises";
 import type { Command } from "./command";
 import type { Environment } from "./environment";
 import type { Program } from "./program";
+import { env } from "bun";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -26,7 +27,7 @@ function printCommand(command: Command) {
 }
 
 function printFrame(environment: Environment) {
-  const cells = environment.stack.map((value, index) => {
+  const cells = environment.stackSlice().map((value, index) => {
     if (index === environment.framePointer) {
       return `(P) ${value}`;
     }

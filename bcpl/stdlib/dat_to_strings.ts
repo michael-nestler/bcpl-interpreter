@@ -2,7 +2,7 @@ import { STRINGS_ADDRESS_SPACE } from "../constants";
 import { Program } from "../program";
 import { MILLISECONDS_IN_DAY } from "./datstamp";
 
-export function dat_to_strings(args: number[], program: Program) {
+export function dat_to_strings(args: Int32Array, program: Program) {
   const timestampAddress = args[0];
   const resultVectorAddress = args[1];
   const daysSinceEpoch = program.environment.stack[timestampAddress];
