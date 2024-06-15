@@ -336,32 +336,13 @@ export class Program {
       case "SL": {
         const value = this.environment.pop();
         const address = this.resolveLabel(this.firstArg(command));
-        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          this.environment.stack[address] = value | 0;
-        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          this.environment.stack[address] = value | 0;
-        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
-          console.error("Trying to SL a string", address, value);
-          return false;
-        } else {
-          this.environment.stack[address] = value | 0;
-        }
+        this.environment.stack[address] = value | 0;
         break;
       }
 
       case "LL": {
         const address = this.resolveLabel(this.firstArg(command));
-        let value: number;
-        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          value = this.environment.stack[address];
-        } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
-          value = this.environment.stack[address];
-        } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
-          console.error("Trying to LL a string", address);
-          return false;
-        } else {
-          value = this.environment.stack[address];
-        }
+        const value = this.environment.stack[address];
         this.environment.push(value | 0);
         break;
       }
