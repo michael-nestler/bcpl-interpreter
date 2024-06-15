@@ -1,5 +1,5 @@
 import type { Command } from "./command";
-import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE, TRUE } from "./constants";
+import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "./constants";
 import { Environment } from "./environment";
 import { absolute, divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
@@ -269,11 +269,7 @@ export class Program {
 
       case "RV": {
         const address = this.environment.pop();
-        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          this.environment.push(this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)]);
-        } else {
-          this.environment.push(this.environment.stack[address]);
-        }
+        this.environment.push(this.environment.stack[address]);
         break;
       }
 
@@ -288,11 +284,7 @@ export class Program {
       case "STIND": {
         const address = this.environment.pop();
         const value = this.environment.pop();
-        if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] = value;
-        } else {
-          this.environment.stack[address] = value;
-        }
+        this.environment.stack[address] = value;
         break;
       }
 
@@ -325,7 +317,7 @@ export class Program {
         const address = this.environment.pop();
         let intVal = 0;
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          intVal = this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)];
+          intVal = this.environment.stack[address];
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
           intVal = this.environment.stack[address];
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
@@ -355,8 +347,8 @@ export class Program {
         const byteMask = 0xff << (index * 8);
         const shiftedByte = (byteVal & 0xff) << (index * 8);
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] |= byteMask;
-          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] &= shiftedByte;
+          this.environment.stack[address] |= byteMask;
+          this.environment.stack[address] &= shiftedByte;
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
           this.environment.stack[address] |= byteMask;
           this.environment.stack[address] &= shiftedByte;
@@ -374,7 +366,7 @@ export class Program {
         const value = this.environment.pop();
         const address = this.resolveLabel(this.firstArg(command));
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)] = value | 0;
+          this.environment.stack[address] = value | 0;
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
           this.environment.stack[address] = value | 0;
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
@@ -390,7 +382,7 @@ export class Program {
         const address = this.resolveLabel(this.firstArg(command));
         let value: number;
         if ((address & STATIC_ADDRESS_SPACE) === (STATIC_ADDRESS_SPACE | 0)) {
-          value = this.environment.staticVariables[(address | 0) - (STATIC_ADDRESS_SPACE | 0)];
+          value = this.environment.stack[address];
         } else if ((address & GLOBAL_ADDRESS_SPACE) === (GLOBAL_ADDRESS_SPACE | 0)) {
           value = this.environment.stack[address];
         } else if ((address & STRINGS_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {

@@ -11,13 +11,15 @@ export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, 
   program.commands = commands;
   program.arguments = args;
   program.input = input;
+  let staticVariables = 0;
   commands.forEach((command, index) => {
     if (command.operation === "LAB" || command.operation === "ENTRY") {
       program.labels.set(command.arguments[0], index);
     } else if (command.operation === "DATALAB") {
-      program.labels.set(command.arguments[0], STATIC_ADDRESS_SPACE + program.environment.staticVariables.length);
+      program.labels.set(command.arguments[0], STATIC_ADDRESS_SPACE + staticVariables);
     } else if (command.operation === "ITEMN") {
-      program.environment.staticVariables.push(command.arguments[0]);
+      program.environment.setStaticVariable(staticVariables, command.arguments[0]);
+      staticVariables++;
     }
   });
   if (["ENTRY", "SECTION"].includes(commands[0]?.operation)) {
