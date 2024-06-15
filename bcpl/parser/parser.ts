@@ -17,7 +17,7 @@ export function parseCode(text: string): ParsedProgram {
   let currentCommand: Command | null = null;
   let lastCharacter: [number, number] = [1, 1];
   let quotes = 0;
-  const normalizedText = `${text}\n`;
+  const normalizedText = `${text.trimEnd()}\n`;
   for (let i = 0; i < normalizedText.length; i++) {
     if (
       normalizedText[i] === "#" &&

@@ -35,9 +35,16 @@ export class CodeViewComponent {
   }
 
   setBreakpoint(event: Event) {
+    let input: HTMLInputElement | null = null;
     if (event.target instanceof HTMLInputElement) {
-      const index = Number(event.target.getAttribute("data-linenumber")) - 1;
-      this.breakpoints[index] = event.target.checked;
+      input = event.target;
+    } else if (event.target instanceof HTMLTableCellElement) {
+      input = event.target.parentElement?.firstElementChild?.firstElementChild as HTMLInputElement;
+      input.checked = !input.checked;
+    }
+    if (input) {
+      const index = Number(input.getAttribute("data-linenumber")) - 1;
+      this.breakpoints[index] = input.checked;
       this.breakpointsChanged.emit(this.breakpoints);
     }
   }

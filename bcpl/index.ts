@@ -4,7 +4,7 @@ import { Program } from "./program";
 
 export { Program } from "./program";
 
-export function loadProgram(ocodeSrc: string, args: string = "", input: string = ""): [Program, string] {
+export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, string] {
   const { commands, styledHtml } = parseCode(ocodeSrc);
 
   const program = new Program();
