@@ -38,6 +38,7 @@ export class StackViewComponent {
   }
 
   private frames(framePointer: number, frameEnd: number, program: Program): Frame[] {
+    console.log(framePointer, frameEnd);
     type numbersWithOptCount = (number | [number, number])[];
     const entries = program.environment.stack
       .slice(framePointer, framePointer + frameEnd)
@@ -56,7 +57,8 @@ export class StackViewComponent {
     const functionName = this.findFunctionName(framePointer, program);
     const frame = { functionName, entries };
     if (framePointer !== 0) {
-      return [...this.frames(program.environment.stack[framePointer], framePointer, program), frame];
+      const parentFrame = program.environment.stack[framePointer];
+      return [...this.frames(parentFrame, framePointer - parentFrame, program), frame];
     }
     return [frame];
   }
