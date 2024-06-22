@@ -1,0 +1,13 @@
+<h4>Stack</h4>
+<div class="frames-wrapper">
+    <table class="frames">
+    @for (frame of stackFrames(); track $index) {
+        <tr class="frame">
+            <th>{{ frame.functionName }}</th>
+            @for (entry of frame.entries; track $index) {
+                <td>{{ entry }}</td>
+            }
+        </tr>
+    }
+    </table>
+</div>

@@ -1,5 +1,7 @@
-import { Component, computed, input, signal } from "@angular/core";
+import { Component, computed, input } from "@angular/core";
+import { GLOBAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "bcpl/constants";
 import { Program } from "bcpl/program";
+import { getStdlibName, isStdlibCall } from "bcpl/stdlib";
 
 interface Frame {
   functionName: string;
@@ -9,22 +11,7 @@ interface Frame {
 @Component({
   selector: "stack-view",
   standalone: true,
-  template: `
-        <h4>Stack</h4>
-        {{ program().environment.currentOffset }}
-        <div class="frames">
-        @for (frame of stackFrames(); track $index) {
-            <div class="frame">
-                <div>{{ frame.functionName }}</div>
-                <div>
-                @for (entry of frame.entries; track $index) {
-                    <div>{{ entry }}</div>
-                }
-                </div>
-            </div>
-        }
-        </div>
-    `,
+  templateUrl: "./stack-view.component.html",
   styleUrl: "./stack-view.component.css",
 })
 export class StackViewComponent {
@@ -52,6 +39,7 @@ export class StackViewComponent {
         }
         return acc;
       }, [])
+      .map((x) => typeof x === 'number' ? this.resolveReferences(program, x) : x)
       .map((x) => (Array.isArray(x) ? `${x[0]} x ${x[1]}` : x.toString()));
     const functionName = this.findFunctionName(framePointer, program);
     const frame = { functionName, entries };
@@ -69,5 +57,22 @@ export class StackViewComponent {
     const entryInstruction = program.environment.stack[framePointer + 2];
     const nameChars = program.commands[entryInstruction].arguments.slice(2);
     return String.fromCharCode(...nameChars);
+  }
+
+  private resolveReferences(program: Program, value: number) {
+    if ((value & STATIC_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
+      const str = JSON.stringify(program.getString(value));
+      if (str.length > 20) {
+        return str.substring(0, 20) + "…";
+      }
+      return str;
+    }
+    if (isStdlibCall(value)) {
+      const name = getStdlibName(value);
+      if (name) {
+        return name + "()";
+      }
+    }
+    return value;
   }
 }

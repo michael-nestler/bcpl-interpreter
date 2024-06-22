@@ -22,6 +22,11 @@ export function isStdlibCall(target: number) {
   return Boolean(target & STDLIB_SPACE);
 }
 
+export function getStdlibName(target: number) {
+  const stdlibFunction = STDLIB_FUNCTIONS.get((target | 0) - (STDLIB_SPACE | 0));
+  return stdlibFunction?.name;
+}
+
 export function callStdlib(target: number, k: number, args: Int32Array, program: Program) {
   const stdlibFunction = STDLIB_FUNCTIONS.get((target | 0) - (STDLIB_SPACE | 0));
   if (!stdlibFunction) {
