@@ -73,4 +73,8 @@ export class Environment {
   getStaticVariable(index: number) {
     return this.stack[STATIC_ADDRESS_SPACE + index];
   }
+
+  copy() {
+    return Object.assign(Object.create(Environment.prototype), this, { stack: this.stack.slice() });
+  }
 }

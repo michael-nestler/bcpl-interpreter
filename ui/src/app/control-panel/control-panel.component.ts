@@ -1,50 +1,13 @@
 import { HttpClient } from "@angular/common/http";
-import { Component, OnInit, inject, input, output, signal } from "@angular/core";
+import { Component, OnInit, effect, inject, input, output, signal } from "@angular/core";
 import { Program } from "bcpl";
+import { Environment } from "bcpl/environment";
 import { firstValueFrom } from "rxjs";
 
 @Component({
   selector: "control-panel",
   standalone: true,
-  template: `
-        <button type="button" popovertarget="browser-action">
-            <div class="material-symbols-outlined">folder_open</div>
-        </button>
-        <div popover id="browser-action">
-            <div class="browse-bcpl-wrapper">
-                <button type="button">
-                    <span class="material-symbols-outlined">feature_search</span>
-                    Predefined BCPL
-                    <span class="material-symbols-outlined">chevron_right</span>
-                </button>
-                <div class="side-menu">
-                    @for (program of predefinedPrograms(); track $index) {
-                        <button type="button" (click)="loadPredefinedProgram(program)">{{ program }}</button>
-                    }
-                </div>
-            </div>
-            <button type="button" (click)="pasteOCODE()"><span class="material-symbols-outlined">content_paste_go</span> Paste OCODE</button>
-        </div>
-        <button type="button" popovertarget="settings">
-            <div class="material-symbols-outlined">settings</div>
-        </button>
-        <div popover id="settings">
-          <div>Arguments <input type="text" (change)="setArguments($event)"></div>
-          <div>Input <textarea (change)="setInput($event)"></textarea></div>
-        </div>
-        <button type="button" [disabled]="state !== 'paused'" (click)="resumeExecution()">
-            <div class="material-symbols-outlined">play_arrow</div>
-        </button>
-        <button type="button" (click)="reset()">
-            <div class="material-symbols-outlined">stop</div>
-        </button>
-        <button type="button" [disabled]="state !== 'paused'" (click)="next()">
-            <div class="material-symbols-outlined">step</div>
-        </button>
-        <button type="button" [disabled]="state !== 'paused'" (click)="stepOver()">
-            <div class="material-symbols-outlined">step_over</div>
-        </button>
-    `,
+  templateUrl: "./control-panel.component.html",
   styleUrl: "./control-panel.component.css",
 })
 export class ControlPanelComponent implements OnInit {
@@ -59,6 +22,14 @@ export class ControlPanelComponent implements OnInit {
   arguments = output<string>();
   inputChange = output<string>();
   stopSignal = false;
+  history: Program[] = [];
+  restoreCheckpoint = output<Program>();
+
+  constructor() {
+    effect(() => 
+      this.history = [this.program().copy()]
+    );
+  }
 
   async ngOnInit() {
     const response = await firstValueFrom(this.http.get<string[]>("/assets/bcpl/index.json"));
@@ -146,6 +117,23 @@ export class ControlPanelComponent implements OnInit {
   setInput(event: Event) {
     if (event.target instanceof HTMLTextAreaElement) {
       this.inputChange.emit(event.target.value);
+    }
+  }
+
+  stepBack() {
+    const lastCheckpoint = this.history.at(-1)?.copy();
+    if (lastCheckpoint) {
+      const targetInstructions = this.program().instructionsRan - 1;
+      if (lastCheckpoint.instructionsRan >= targetInstructions) {
+        this.history.pop();
+        this.stepBack();
+      }
+      while (lastCheckpoint.instructionsRan < targetInstructions) {
+        lastCheckpoint.next();
+      }
+      this.restoreCheckpoint.emit(lastCheckpoint);
+    } else {
+      this.reset();
     }
   }
 }

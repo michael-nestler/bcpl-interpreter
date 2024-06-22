@@ -14,5 +14,6 @@ export async function runCode(path: string, debug = false): Promise<Program> {
     }
   } while (program.next());
   console.timeEnd("Test run");
+  console.log(program.instructionsRan, "instructions ran");
   return program;
 }

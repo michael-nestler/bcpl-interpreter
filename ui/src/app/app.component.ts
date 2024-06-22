@@ -10,7 +10,10 @@ import { StackViewComponent } from "./stack-view/stack-view.component";
   standalone: true,
   imports: [JsonPipe, CodeViewComponent, ControlPanelComponent, StackViewComponent],
   template: `
-    <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()" (loadCode)="loadCode($event)" (resetProgram)="resetProgram()" (arguments)="updateArguments($event)" (inputChange)="updateInput($event)"></control-panel>
+    <control-panel [program]="program" [breakpoints]="breakpoints" (updateCodeView)="updateCodeView()" 
+    (loadCode)="loadCode($event)" (resetProgram)="resetProgram()" (arguments)="updateArguments($event)" 
+    (inputChange)="updateInput($event)" (restoreCheckpoint)="restoreCheckpoint($event)"
+    ></control-panel>
     <div class="main-view">
       <div class="code-view">
         <code-view [code]="highlightedCode" [highlightedCommand]="highlightedCommand()" [lineNumbers]="lineNumbers" (breakpointsChanged)="breakpoints = $event"></code-view>
@@ -53,7 +56,7 @@ ENDPROC STACK 3 STORE GLOBAL 1 1 L1`;
       this.highlightedCommand.set(this.program.programCounter);
     }
     this.lineNumbers = this.program.commands.at(-1)?.start[0] || 1;
-    this.programCopy = Object.assign(Object.create(Program.prototype), this.program);
+    this.programCopy = this.program.copy();
   }
 
   loadCode(code: string) {
@@ -67,6 +70,11 @@ ENDPROC STACK 3 STORE GLOBAL 1 1 L1`;
 
   resetProgram() {
     this.loadCode(this.code);
+  }
+
+  restoreCheckpoint(program: Program) {
+    Object.assign(this.program, program);
+    this.updateCodeView();
   }
 
   updateArguments(args: string) {

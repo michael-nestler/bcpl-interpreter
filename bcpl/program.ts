@@ -22,7 +22,6 @@ export class Program {
   labels = new Map<number, number>();
   returnValue = 0;
   output = "";
-  currentDataLabel = 0;
   arguments = "";
   // easter: "2024";
   // sudoku: "000638000 706000305 010000040 008712400 090000050 002569100 030000010 105000608 000184000";
@@ -31,6 +30,7 @@ export class Program {
   inputOffset = 0;
   stringAddresses = new Map<number, number>();
   stringIndex = 0;
+  instructionsRan = 0;
 
   next(): boolean {
     const command = this.commands[this.programCounter];
@@ -38,6 +38,7 @@ export class Program {
       return false;
     }
     this.programCounter++;
+    this.instructionsRan++;
     switch (command.operation) {
       case "TRUE":
         loadConstantTrue(this.environment);
@@ -410,5 +411,9 @@ export class Program {
     if (!condition) {
       throw new Error(`Assertion failed: ${errorMessage}`);
     }
+  }
+
+  copy() {
+    return Object.assign(Object.create(Program.prototype), this, { environment: this.environment.copy() })
   }
 }
