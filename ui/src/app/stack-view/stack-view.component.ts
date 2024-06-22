@@ -38,7 +38,6 @@ export class StackViewComponent {
   }
 
   private frames(framePointer: number, frameEnd: number, program: Program): Frame[] {
-    console.log(framePointer, frameEnd);
     type numbersWithOptCount = (number | [number, number])[];
     const entries = program.environment.stack
       .slice(framePointer, framePointer + frameEnd)

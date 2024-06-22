@@ -249,26 +249,6 @@ export class Program {
         break;
       }
 
-      case "GLOBAL": {
-        const returnAddress = this.programCounter;
-        const labelIndex = command.arguments.slice(1).findIndex((value, index) => value === 1 && index % 2 === 0);
-        for (let i = 1; i < command.arguments.length - 1; i += 2) {
-          this.environment.setGlobalVariable(command.arguments[i], this.resolveLabel(command.arguments[i + 1]));
-        }
-        if (labelIndex !== -1) {
-          this.programCounter = this.resolveLabel(command.arguments[labelIndex + 2]);
-
-          this.environment.push(this.environment.framePointer);
-          this.environment.push(returnAddress);
-          this.environment.push(this.programCounter);
-          this.environment.framePointer = this.environment.currentOffset - 3;
-          this.environment.currentOffset = 3;
-        } else {
-          console.log("Encountered GLOBAL without entry at index 1");
-        }
-        break;
-      }
-
       case "LSTR": {
         const address = this.stringAddresses.get(this.programCounter - 1);
         if (!address) {

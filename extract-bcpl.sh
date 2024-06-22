@@ -13,8 +13,6 @@ files=(\
     enlarge \
     fact \
     procode \
-    sortdemo \
-    sortlines \
     sudoku \
 )
 
@@ -24,7 +22,7 @@ for file in ${files[@]}; do
 done
 
 pushd bcpl/test-programs
-tests=(*.ocode)
+tests=(coins.ocode)
 tests_json=$(jq -c -n '$ARGS.positional' --args "${tests[@]%.*}")
 popd
 cp bcpl/test-programs/*.ocode ui/src/assets/bcpl
