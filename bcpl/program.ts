@@ -232,6 +232,9 @@ export class Program {
         if (this.commands[this.programCounter - 1]?.operation === "FNAP") {
           this.environment.push(this.returnValue);
         }
+        if (this.programCounter === -1) {
+          return false;
+        }
         break;
       }
 
@@ -240,6 +243,9 @@ export class Program {
         this.programCounter = this.environment.stack[this.environment.framePointer + 1];
         this.environment.currentOffset = this.environment.framePointer - oldFramePointer;
         this.environment.framePointer = oldFramePointer;
+        if (this.programCounter === -1) {
+          return false;
+        }
         break;
       }
 
@@ -355,6 +361,7 @@ export class Program {
       case "SECTION":
       case "DATALAB":
       case "ITEMN":
+      case "GLOBAL":
         return true;
 
       case "FINISH":
@@ -413,7 +420,7 @@ export class Program {
     return command.arguments[1];
   }
 
-  private resolveLabel(labelIndex: number): number {
+  resolveLabel(labelIndex: number): number {
     const result = this.labels.get(labelIndex);
     this.require(result !== undefined, `Expected to find referenced label L${labelIndex}`);
     return result;

@@ -4,21 +4,19 @@ import { STDLIB_FUNCTIONS, STDLIB_SPACE } from "./stdlib";
 export class Environment {
   stack: Int32Array = new Int32Array(STACK_SIZE);
   framePointer = 0;
-  currentOffset = 1;
+  currentOffset = 0;
 
   constructor() {
-    for (const stdlibFunction of STDLIB_FUNCTIONS.keys()) {
-      this.setGlobalVariable(stdlibFunction, (STDLIB_SPACE + stdlibFunction) | 0);
-    }
+    this.clear();
   }
 
   clear() {
     this.stack.fill(0);
+    this.framePointer = 0;
+    this.currentOffset = 0;
     for (const stdlibFunction of STDLIB_FUNCTIONS.keys()) {
       this.setGlobalVariable(stdlibFunction, (STDLIB_SPACE + stdlibFunction) | 0);
     }
-    this.framePointer = 0;
-    this.currentOffset = 1;
   }
 
   push(value: number) {

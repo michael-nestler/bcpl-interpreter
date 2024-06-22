@@ -1,8 +1,8 @@
-import { STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "./constants";
+import { STATIC_ADDRESS_SPACE } from "./constants";
 import { parseCode } from "./parser/parser";
 import { Program } from "./program";
 
-export { Program } from "./program";
+export { Program };
 
 export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, string] {
   const { commands, styledHtml } = parseCode(ocodeSrc);
@@ -23,10 +23,24 @@ export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, 
     } else if (command.operation === "LSTR") {
       const address = program.putString(command.arguments);
       program.stringAddresses.set(index, address);
+    } else if (command.operation === "GLOBAL") {
+      const labelIndex = command.arguments.slice(1).findIndex((value, index) => value === 1 && index % 2 === 0);
+      for (let i = 1; i < command.arguments.length - 1; i += 2) {
+        program.environment.setGlobalVariable(command.arguments[i], program.resolveLabel(command.arguments[i + 1]));
+      }
+      if (labelIndex !== -1) {
+        const returnAddress = -1;
+        program.programCounter = program.resolveLabel(command.arguments[labelIndex + 2]);
+
+        program.environment.push(program.environment.framePointer);
+        program.environment.push(returnAddress);
+        program.environment.push(program.programCounter);
+        program.environment.framePointer = program.environment.currentOffset - 3;
+        program.environment.currentOffset = 3;
+      } else {
+        console.log("Encountered GLOBAL without entry at index 1");
+      }
     }
   });
-  if (["ENTRY", "SECTION"].includes(commands[0]?.operation)) {
-    program.programCounter = commands.length - 1;
-  }
   return [program, styledHtml];
 }

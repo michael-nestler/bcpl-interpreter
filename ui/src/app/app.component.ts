@@ -23,12 +23,11 @@ import { StackViewComponent } from "./stack-view/stack-view.component";
   styleUrl: "./app.component.css",
 })
 export class AppComponent implements OnInit {
-  code = `JUMP L2
-ENTRY L1 5 's' 't' 'a' 'r' 't'
+  code = `ENTRY L1 5 's' 't' 'a' 'r' 't'
 SAVE 3 LN 1 LN 0 LN -1 STORE STACK 9
 LSTR 13 'A' 'n' 's' 'w' 'e' 'r' ' ' 'i' 's' ' ' '%' 'n' 10
 LP 4 LP 3 ADD LP 5 ADD LG 94 RTAP 6 RTRN STACK 3
-ENDPROC STACK 3 LAB L2 STORE GLOBAL 1 1 L1`;
+ENDPROC STACK 3 STORE GLOBAL 1 1 L1`;
   highlightedCode = "";
   title = "ui";
   program!: Program;

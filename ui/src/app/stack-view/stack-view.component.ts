@@ -62,7 +62,7 @@ export class StackViewComponent {
   }
 
   private findFunctionName(framePointer: number, program: Program) {
-    if (framePointer === 0) {
+    if (framePointer === 0 && program.commands.at(-1)?.operation !== "GLOBAL") {
       return "root";
     }
     const entryInstruction = program.environment.stack[framePointer + 2];
