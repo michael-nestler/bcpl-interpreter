@@ -22,6 +22,7 @@ export class CodeViewComponent {
   constructor() {
     effect(() => {
       this.breakpoints = Array.from({ length: this.lineNumbers() }, () => false);
+      this.breakpointsChanged.emit(this.breakpoints);
     });
     effect(() => this.reloadCodeHighlighting(this.code(), this.highlightedCommand()));
   }
