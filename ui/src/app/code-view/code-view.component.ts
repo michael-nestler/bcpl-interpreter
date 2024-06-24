@@ -40,8 +40,10 @@ export class CodeViewComponent {
     if (event.target instanceof HTMLInputElement) {
       input = event.target;
     } else if (event.target instanceof HTMLTableCellElement) {
-      input = event.target.parentElement?.firstElementChild?.firstElementChild as HTMLInputElement;
-      input.checked = !input.checked;
+      if (!event.target.previousElementSibling || !event.target.previousElementSibling.classList.contains("linenumber")) {
+        input = event.target.parentElement?.firstElementChild?.firstElementChild as HTMLInputElement;
+        input.checked = !input.checked;
+      }
     }
     if (input) {
       const index = Number(input.getAttribute("data-linenumber")) - 1;
