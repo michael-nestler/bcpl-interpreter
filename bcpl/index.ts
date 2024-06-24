@@ -12,11 +12,14 @@ export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, 
   program.arguments = args;
   program.input = input;
   let staticVariables = 0;
+  let currentSection = 0;
   commands.forEach((command, index) => {
-    if (command.operation === "LAB" || command.operation === "ENTRY") {
-      program.labels.set(command.arguments[0], index);
+    if (command.operation === "SECTION") {
+      currentSection = index;
+    } else if (command.operation === "LAB" || command.operation === "ENTRY") {
+      program.setLabel(currentSection, command.arguments[0], index);
     } else if (command.operation === "DATALAB") {
-      program.labels.set(command.arguments[0], STATIC_ADDRESS_SPACE + staticVariables);
+      program.setLabel(currentSection, command.arguments[0], STATIC_ADDRESS_SPACE + staticVariables);
     } else if (command.operation === "ITEMN") {
       program.environment.setStaticVariable(staticVariables, command.arguments[0]);
       staticVariables++;
@@ -26,11 +29,11 @@ export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, 
     } else if (command.operation === "GLOBAL") {
       const labelIndex = command.arguments.slice(1).findIndex((value, index) => value === 1 && index % 2 === 0);
       for (let i = 1; i < command.arguments.length - 1; i += 2) {
-        program.environment.setGlobalVariable(command.arguments[i], program.resolveLabel(command.arguments[i + 1]));
+        program.environment.setGlobalVariable(command.arguments[i], program.getLabel(currentSection, command.arguments[i + 1]));
       }
       if (labelIndex !== -1) {
         const returnAddress = -1;
-        program.programCounter = program.resolveLabel(command.arguments[labelIndex + 2]);
+        program.programCounter = program.getLabel(currentSection, command.arguments[labelIndex + 2]);
 
         program.environment.push(program.environment.framePointer);
         program.environment.push(returnAddress);

@@ -1,5 +1,5 @@
 import type { Command } from "./command";
-import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "./constants";
+import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "./constants";
 import { Environment } from "./environment";
 import { absolute, divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
@@ -15,11 +15,13 @@ import {
 } from "./operations/variables";
 import { callStdlib, isStdlibCall } from "./stdlib";
 
+const utf8Decoder = new TextDecoder("utf-8");
+
 export class Program {
   environment: Environment = new Environment();
   commands: Command[] = [];
   programCounter = 0;
-  labels = new Map<number, number>();
+  labels = new Map<number, Map<number, number>>();
   returnValue = 0;
   output = "";
   arguments = "";
@@ -129,16 +131,16 @@ export class Program {
         this.programCounter = this.environment.pop();
         break;
       case "JUMP":
-        this.programCounter = this.resolveLabel(this.firstArg(command));
+        this.programCounter = this.resolveLabelAtCurrentInstruction(this.firstArg(command));
         break;
       case "JT":
         if ((this.environment.pop() | 0) !== (FALSE | 0)) {
-          this.programCounter = this.resolveLabel(this.firstArg(command));
+          this.programCounter = this.resolveLabelAtCurrentInstruction(this.firstArg(command));
         }
         break;
       case "JF":
         if ((this.environment.pop() | 0) === (FALSE | 0)) {
-          this.programCounter = this.resolveLabel(this.firstArg(command));
+          this.programCounter = this.resolveLabelAtCurrentInstruction(this.firstArg(command));
         }
         break;
 
@@ -158,10 +160,10 @@ export class Program {
         this.environment.push(LOCAL_ADDRESS_SPACE + this.firstArg(command) + this.environment.framePointer);
         break;
       case "INITGL":
-        initGlobalVariableToValue(this.environment, this.firstArg(command), this.resolveLabel(this.secondArg(command)));
+        initGlobalVariableToValue(this.environment, this.firstArg(command), this.resolveLabelAtCurrentInstruction(this.secondArg(command)));
         break;
       case "LF":
-        this.environment.push(this.resolveLabel(this.firstArg(command)));
+        this.environment.push(this.resolveLabelAtCurrentInstruction(this.firstArg(command)));
         break;
 
       case "FNAP": {
@@ -267,7 +269,7 @@ export class Program {
       }
 
       case "LLL":
-        this.environment.push(this.resolveLabel(this.firstArg(command)));
+        this.environment.push(this.resolveLabelAtCurrentInstruction(this.firstArg(command)));
         break;
 
       case "LLG":
@@ -283,7 +285,7 @@ export class Program {
 
       case "RES":
         this.returnValue = this.environment.pop();
-        this.programCounter = this.resolveLabel(this.firstArg(command));
+        this.programCounter = this.resolveLabelAtCurrentInstruction(this.firstArg(command));
         break;
 
       case "RSTACK":
@@ -298,9 +300,9 @@ export class Program {
         const caseLabels = command.arguments.slice(2).filter((_, index) => index % 2 === 1);
         const caseIndex = casesValues.indexOf(value);
         if (caseIndex !== -1) {
-          this.programCounter = this.resolveLabel(caseLabels[caseIndex]);
+          this.programCounter = this.resolveLabelAtCurrentInstruction(caseLabels[caseIndex]);
         } else {
-          this.programCounter = this.resolveLabel(defaultLabel);
+          this.programCounter = this.resolveLabelAtCurrentInstruction(defaultLabel);
         }
         break;
       }
@@ -322,13 +324,13 @@ export class Program {
 
       case "SL": {
         const value = this.environment.pop();
-        const address = this.resolveLabel(this.firstArg(command));
+        const address = this.resolveLabelAtCurrentInstruction(this.firstArg(command));
         this.environment.stack[address] = value | 0;
         break;
       }
 
       case "LL": {
-        const address = this.resolveLabel(this.firstArg(command));
+        const address = this.resolveLabelAtCurrentInstruction(this.firstArg(command));
         const value = this.environment.stack[address];
         this.environment.push(value | 0);
         break;
@@ -362,11 +364,11 @@ export class Program {
 
   getString(stringRef: number) {
     const length = this.getByte(stringRef, 0);
-    let result = "";
+    const bytes = new Uint8Array(length);
     for (let i = 1; i <= length; i++) {
-      result += String.fromCharCode(this.getByte(stringRef, i));
+      bytes[i - 1] = this.getByte(stringRef, i);
     }
-    return result;
+    return utf8Decoder.decode(new Uint8Array(bytes));
   }
 
   putByte(address: number, index: number, value: number) {
@@ -401,10 +403,16 @@ export class Program {
     return command.arguments[1];
   }
 
-  resolveLabel(labelIndex: number): number {
-    const result = this.labels.get(labelIndex);
-    this.require(result !== undefined, `Expected to find referenced label L${labelIndex}`);
+  getLabel(section: number, labelIndex: number): number {
+    const result = this.labels.get(section)?.get(labelIndex);
+    this.require(result !== undefined, `Expected to find referenced label L${labelIndex} in section ${section}`);
     return result;
+  }
+
+  resolveLabelAtCurrentInstruction(labelIndex: number): number {
+    const sections = Array.from(this.labels.keys());
+    const currentSection = sections.toSorted().findLast(section => section < this.programCounter) || 0;
+    return this.getLabel(currentSection, labelIndex);
   }
 
   private require(condition: boolean, errorMessage: string): asserts condition {
@@ -415,5 +423,11 @@ export class Program {
 
   copy() {
     return Object.assign(Object.create(Program.prototype), this, { environment: this.environment.copy() })
+  }
+
+  setLabel(section: number, label: number, value: number) {
+    const sectionLabels = this.labels.get(section) || new Map<number, number>();
+    sectionLabels.set(label, value);
+    this.labels.set(section, sectionLabels);
   }
 }
