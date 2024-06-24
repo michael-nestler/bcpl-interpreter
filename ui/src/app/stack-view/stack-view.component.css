@@ -6,6 +6,11 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding-left: 12px;
 
+    .register-view {
+        display: flex;
+        justify-content: space-between;
+    }
+
     h4 {
         margin-block-start: 0;
         margin-block-end: 0.5em;

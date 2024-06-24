@@ -1,13 +1,27 @@
-<h4>Stack</h4>
+<div class="register-view">
+    <h4>Stack</h4>
+    <table>
+        <tr>
+            <td><strong>PC</strong></td>
+            <td>{{ program().programCounter }}</td>
+            <td><strong>P</strong></td>
+            <td>{{ program().environment.framePointer }}</td>
+            <td><strong>S</strong></td>
+            <td>{{ program().environment.currentOffset }}</td>
+            <td><strong>A</strong></td>
+            <td>{{ program().returnValue }}</td>
+        </tr>
+    </table>
+</div>
 <div class="frames-wrapper">
     <table class="frames">
-    @for (frame of stackFrames(); track $index) {
-        <tr class="frame">
-            <th>{{ frame.functionName }}</th>
-            @for (entry of frame.entries; track $index) {
+        @for (frame of stackFrames(); track $index) {
+            <tr class="frame">
+                <th>{{ frame.functionName }}</th>
+                @for (entry of frame.entries; track $index) {
                 <td>{{ entry }}</td>
-            }
-        </tr>
-    }
+                }
+            </tr>
+        }
     </table>
 </div>
