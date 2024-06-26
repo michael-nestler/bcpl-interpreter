@@ -73,3 +73,4 @@ export enum Operation {
   INITGL = 998, // Cannot be found in implementation, but was specified in original paper
   LF = 999,
 }
+export default Operation;
