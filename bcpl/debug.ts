@@ -1,6 +1,7 @@
 import * as readline from "node:readline/promises";
 import type { Command } from "./command";
 import type { Environment } from "./environment";
+import { Operation } from "./operations/operations";
 import type { Program } from "./program";
 
 const rl = readline.createInterface({
@@ -22,7 +23,8 @@ async function confirmation(): Promise<string> {
 }
 
 function printCommand(command: Command) {
-  console.log(`${command.start[0]} ${command.operation} ${command.arguments.join(" ")}`);
+  const op = Operation[command.operation];
+  console.log(`${command.start[0]} ${op} ${command.arguments.join(" ")}`);
 }
 
 function printFrame(environment: Environment) {

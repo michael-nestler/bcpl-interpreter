@@ -1,5 +1,6 @@
 import { Component, computed, input } from "@angular/core";
-import { GLOBAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "bcpl/constants";
+import { STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "bcpl/constants";
+import { Operation } from "bcpl/operations/operations";
 import { Program } from "bcpl/program";
 import { getStdlibName, isStdlibCall } from "bcpl/stdlib";
 
@@ -39,7 +40,7 @@ export class StackViewComponent {
         }
         return acc;
       }, [])
-      .map((x) => typeof x === 'number' ? this.resolveReferences(program, x) : x)
+      .map((x) => (typeof x === "number" ? this.resolveReferences(program, x) : x))
       .map((x) => (Array.isArray(x) ? `${x[0]} x ${x[1]}` : x.toString()));
     const functionName = this.findFunctionName(framePointer, program);
     const frame = { functionName, entries };
@@ -51,7 +52,7 @@ export class StackViewComponent {
   }
 
   private findFunctionName(framePointer: number, program: Program) {
-    if (framePointer === 0 && program.commands.at(-1)?.operation !== "GLOBAL") {
+    if (framePointer === 0 && program.commands.at(-1)?.operation !== Operation.GLOBAL) {
       return "root";
     }
     const entryInstruction = program.environment.stack[framePointer + 2];
@@ -63,14 +64,14 @@ export class StackViewComponent {
     if ((value & STATIC_ADDRESS_SPACE) === (STRINGS_ADDRESS_SPACE | 0)) {
       const str = JSON.stringify(program.getString(value));
       if (str.length > 20) {
-        return str.substring(0, 20) + "…";
+        return `${str.substring(0, 20)}…`;
       }
       return str;
     }
     if (isStdlibCall(value)) {
       const name = getStdlibName(value);
       if (name) {
-        return name + "()";
+        return `${name}()`;
       }
     }
     return value;

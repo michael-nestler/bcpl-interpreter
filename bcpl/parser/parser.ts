@@ -1,6 +1,6 @@
 import { removePrefix } from "../../str-utils";
 import type { Command } from "../command";
-import { type Op, operations } from "../operations/operations";
+import { Operation } from "../operations/operations";
 
 export interface ParsedProgram {
   commands: Command[];
@@ -51,19 +51,29 @@ export function parseCode(text: string): ParsedProgram {
           } else {
             currentCommand.end = lastCharacter;
             commands.push(currentCommand);
-            if (!(currentToken in operations)) {
+            if (!(currentToken in Operation)) {
               throw new Error(`Unknown command: ${currentToken}, line ${line}, column ${column}`);
             }
-            currentCommand = { operation: currentToken as Op, arguments: [], start: [line, column - currentToken.length], end: [-1, -1] };
+            currentCommand = {
+              operation: Operation[currentToken as keyof typeof Operation],
+              arguments: [],
+              start: [line, column - currentToken.length],
+              end: [-1, -1],
+            };
             lastCharacter = [line, column - 1];
             styledHtml += "</span>";
             styledHtml += `<span class='command command-${commands.length}'><span class='command-op'>${currentToken}</span>`;
           }
         } else {
-          if (!(currentToken in operations)) {
+          if (!(currentToken in Operation)) {
             throw new Error(`Unknown command: ${currentToken}, line ${line}, column ${column}`);
           }
-          currentCommand = { operation: currentToken as Op, arguments: [], start: [line, column - currentToken.length], end: [-1, -1] };
+          currentCommand = {
+            operation: Operation[currentToken as keyof typeof Operation],
+            arguments: [],
+            start: [line, column - currentToken.length],
+            end: [-1, -1],
+          };
           lastCharacter = [line, column - 1];
           styledHtml += `<span class='command command-${commands.length}'><span class='command-op'>${currentToken}</span>`;
         }

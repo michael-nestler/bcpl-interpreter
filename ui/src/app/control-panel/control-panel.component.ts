@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
-import { Component, OnInit, effect, inject, input, output, signal } from "@angular/core";
+import { Component, OnInit, inject, input, output, signal } from "@angular/core";
 import { Program } from "bcpl";
+import { Operation } from "bcpl/operations/operations";
 import { firstValueFrom } from "rxjs";
 
 @Component({
@@ -63,7 +64,7 @@ export class ControlPanelComponent implements OnInit {
   stepOver() {
     this.stopSignal = false;
     const start = this.program().programCounter;
-    if (!["FNAP", "RTAP"].includes(this.program().commands[start]?.operation)) {
+    if (![Operation.FNAP, Operation.RTAP].includes(this.program().commands[start]?.operation)) {
       return this.next();
     }
     let paused = false;

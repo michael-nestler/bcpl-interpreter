@@ -1,9 +1,10 @@
 import type { Command } from "./command";
-import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STATIC_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "./constants";
+import { FALSE, GLOBAL_ADDRESS_SPACE, LOCAL_ADDRESS_SPACE, STRINGS_ADDRESS_SPACE } from "./constants";
 import { Environment } from "./environment";
 import { absolute, divide, minus, multiply, negate, plus, remainder } from "./operations/arithmetics";
 import { loadConstantFalse, loadConstantTrue, loadValue } from "./operations/constants";
 import { bitwiseEquality, bitwiseInequality, leftShift, logicalAnd, logicalNot, logicalOr, rightShift } from "./operations/logical";
+import { Operation } from "./operations/operations";
 import { equality, greaterThan, greaterThanOrEqualTo, inequality, lessThan, lessThanOrEqualTo } from "./operations/relations";
 import { setStackOffset } from "./operations/stack";
 import {
@@ -41,131 +42,131 @@ export class Program {
     this.programCounter++;
     this.instructionsRan++;
     switch (command.operation) {
-      case "TRUE":
+      case Operation.TRUE:
         loadConstantTrue(this.environment);
         break;
-      case "FALSE":
+      case Operation.FALSE:
         loadConstantFalse(this.environment);
         break;
-      case "LN":
+      case Operation.LN:
         loadValue(this.environment, this.firstArg(command));
         break;
-      case "MUL":
-      case "MULT":
+      case Operation.MUL:
+      case Operation.MULT:
         multiply(this.environment);
         break;
-      case "DIV":
+      case Operation.DIV:
         divide(this.environment);
         break;
-      case "REM":
-      case "MOD":
+      case Operation.REM:
+      case Operation.MOD:
         remainder(this.environment);
         break;
-      case "PLUS":
-      case "ADD":
+      case Operation.PLUS:
+      case Operation.ADD:
         plus(this.environment);
         break;
-      case "MINUS":
-      case "SUB":
+      case Operation.MINUS:
+      case Operation.SUB:
         minus(this.environment);
         break;
-      case "NEG":
+      case Operation.NEG:
         negate(this.environment);
         break;
-      case "ABS":
+      case Operation.ABS:
         absolute(this.environment);
         break;
 
-      case "LSHIFT":
+      case Operation.LSHIFT:
         leftShift(this.environment);
         break;
-      case "RSHIFT":
+      case Operation.RSHIFT:
         rightShift(this.environment);
         break;
-      case "LOGAND":
+      case Operation.LOGAND:
         logicalAnd(this.environment);
         break;
-      case "LOGOR":
+      case Operation.LOGOR:
         logicalOr(this.environment);
         break;
-      case "NOT":
+      case Operation.NOT:
         logicalNot(this.environment);
         break;
-      case "EQV":
+      case Operation.EQV:
         bitwiseEquality(this.environment);
         break;
-      case "NEQV":
-      case "XOR":
+      case Operation.NEQV:
+      case Operation.XOR:
         bitwiseInequality(this.environment);
         break;
 
-      case "EQ":
+      case Operation.EQ:
         equality(this.environment);
         break;
-      case "NE":
+      case Operation.NE:
         inequality(this.environment);
         break;
-      case "LS":
+      case Operation.LS:
         lessThan(this.environment);
         break;
-      case "GR":
+      case Operation.GR:
         greaterThan(this.environment);
         break;
-      case "LE":
+      case Operation.LE:
         lessThanOrEqualTo(this.environment);
         break;
-      case "GE":
+      case Operation.GE:
         greaterThanOrEqualTo(this.environment);
         break;
 
-      case "SAVE":
-      case "STACK":
+      case Operation.SAVE:
+      case Operation.STACK:
         setStackOffset(this.environment, this.firstArg(command));
         break;
 
-      case "LAB":
+      case Operation.LAB:
         /* Labels are read in the initial pass of the program parser */
         break;
-      case "GOTO":
+      case Operation.GOTO:
         this.programCounter = this.environment.pop();
         break;
-      case "JUMP":
+      case Operation.JUMP:
         this.programCounter = this.resolveLabel(this.firstArg(command));
         break;
-      case "JT":
+      case Operation.JT:
         if ((this.environment.pop() | 0) !== (FALSE | 0)) {
           this.programCounter = this.resolveLabel(this.firstArg(command));
         }
         break;
-      case "JF":
+      case Operation.JF:
         if ((this.environment.pop() | 0) === (FALSE | 0)) {
           this.programCounter = this.resolveLabel(this.firstArg(command));
         }
         break;
 
-      case "LP":
+      case Operation.LP:
         loadLocalVariableToStack(this.environment, this.firstArg(command));
         break;
-      case "SP":
+      case Operation.SP:
         saveLocalVariableFromStack(this.environment, this.firstArg(command));
         break;
-      case "LG":
+      case Operation.LG:
         loadGlobalVariableToStack(this.environment, this.firstArg(command));
         break;
-      case "SG":
+      case Operation.SG:
         saveGlobalVariableFromStack(this.environment, this.firstArg(command));
         break;
-      case "LLP":
+      case Operation.LLP:
         this.environment.push(LOCAL_ADDRESS_SPACE + this.firstArg(command) + this.environment.framePointer);
         break;
-      case "INITGL":
+      case Operation.INITGL:
         initGlobalVariableToValue(this.environment, this.firstArg(command), this.resolveLabel(this.secondArg(command)));
         break;
-      case "LF":
+      case Operation.LF:
         this.environment.push(this.resolveLabel(this.firstArg(command)));
         break;
 
-      case "FNAP": {
+      case Operation.FNAP: {
         const k = this.firstArg(command);
         const returnAddress = this.programCounter;
         const target = this.environment.pop();
@@ -192,7 +193,7 @@ export class Program {
         break;
       }
 
-      case "RTAP": {
+      case Operation.RTAP: {
         const k = this.firstArg(command);
         const target = this.environment.pop();
         if (isStdlibCall(target)) {
@@ -220,18 +221,18 @@ export class Program {
         return true;
       }
 
-      case "ENTRY":
+      case Operation.ENTRY:
         break;
-      case "ENDPROC":
+      case Operation.ENDPROC:
         break;
 
-      case "FNRN": {
+      case Operation.FNRN: {
         this.returnValue = this.environment.pop();
         const oldFramePointer = this.environment.stack[this.environment.framePointer];
         this.programCounter = this.environment.stack[this.environment.framePointer + 1];
         this.environment.currentOffset = this.environment.framePointer - oldFramePointer;
         this.environment.framePointer = oldFramePointer;
-        if (this.commands[this.programCounter - 1]?.operation === "FNAP") {
+        if (this.commands[this.programCounter - 1]?.operation === Operation.FNAP) {
           this.environment.push(this.returnValue);
         }
         if (this.programCounter === -1) {
@@ -240,7 +241,7 @@ export class Program {
         break;
       }
 
-      case "RTRN": {
+      case Operation.RTRN: {
         const oldFramePointer = this.environment.stack[this.environment.framePointer];
         this.programCounter = this.environment.stack[this.environment.framePointer + 1];
         this.environment.currentOffset = this.environment.framePointer - oldFramePointer;
@@ -251,7 +252,7 @@ export class Program {
         break;
       }
 
-      case "LSTR": {
+      case Operation.LSTR: {
         const address = this.stringAddresses.get(this.programCounter - 1);
         if (!address) {
           console.log("Unknown LSTR at pc", this.programCounter - 1, command);
@@ -261,38 +262,38 @@ export class Program {
         break;
       }
 
-      case "RV": {
+      case Operation.RV: {
         const address = this.environment.pop();
         this.environment.push(this.environment.stack[address]);
         break;
       }
 
-      case "LLL":
+      case Operation.LLL:
         this.environment.push(this.resolveLabel(this.firstArg(command)));
         break;
 
-      case "LLG":
+      case Operation.LLG:
         this.environment.push(this.firstArg(command) + GLOBAL_ADDRESS_SPACE);
         break;
 
-      case "STIND": {
+      case Operation.STIND: {
         const address = this.environment.pop();
         const value = this.environment.pop();
         this.environment.stack[address] = value;
         break;
       }
 
-      case "RES":
+      case Operation.RES:
         this.returnValue = this.environment.pop();
         this.programCounter = this.resolveLabel(this.firstArg(command));
         break;
 
-      case "RSTACK":
+      case Operation.RSTACK:
         this.environment.currentOffset = this.firstArg(command);
         this.environment.push(this.returnValue);
         break;
 
-      case "SWITCHON": {
+      case Operation.SWITCHON: {
         const value = this.environment.pop();
         const defaultLabel = this.secondArg(command);
         const casesValues = command.arguments.slice(2).filter((_, index) => index % 2 === 0);
@@ -306,14 +307,14 @@ export class Program {
         break;
       }
 
-      case "GETBYTE": {
+      case Operation.GETBYTE: {
         const index = this.environment.pop();
         const address = this.environment.pop();
         this.environment.push(this.getByte(address, index));
         return true;
       }
 
-      case "PUTBYTE": {
+      case Operation.PUTBYTE: {
         const index = this.environment.pop();
         const address = this.environment.pop();
         const byteVal = this.environment.pop();
@@ -321,32 +322,32 @@ export class Program {
         return true;
       }
 
-      case "SL": {
+      case Operation.SL: {
         const value = this.environment.pop();
         const address = this.resolveLabel(this.firstArg(command));
         this.environment.stack[address] = value | 0;
         break;
       }
 
-      case "LL": {
+      case Operation.LL: {
         const address = this.resolveLabel(this.firstArg(command));
         const value = this.environment.stack[address];
         this.environment.push(value | 0);
         break;
       }
 
-      case "QUERY":
+      case Operation.QUERY:
         this.environment.push(0x1234_5678);
         break;
 
-      case "STORE":
-      case "SECTION":
-      case "DATALAB":
-      case "ITEMN":
-      case "GLOBAL":
+      case Operation.STORE:
+      case Operation.SECTION:
+      case Operation.DATALAB:
+      case Operation.ITEMN:
+      case Operation.GLOBAL:
         return true;
 
-      case "FINISH":
+      case Operation.FINISH:
         return false;
 
       default:
@@ -415,7 +416,7 @@ export class Program {
   }
 
   copy() {
-    return Object.assign(Object.create(Program.prototype), this, { environment: this.environment.copy() })
+    return Object.assign(Object.create(Program.prototype), this, { environment: this.environment.copy() });
   }
 
   reset() {
@@ -424,12 +425,16 @@ export class Program {
     this.inputOffset = 0;
     this.instructionsRan = 0;
     if (this.start !== -1) {
-      this.programCounter = this.start;
-      this.environment.push(this.environment.framePointer);
-      this.environment.push(-1);
-      this.environment.push(this.programCounter);
-      this.environment.framePointer = this.environment.currentOffset - 3;
-      this.environment.currentOffset = 3;
+      this.startup();
     }
+  }
+
+  startup() {
+    this.programCounter = this.start;
+    this.environment.push(this.environment.framePointer);
+    this.environment.push(-1);
+    this.environment.push(this.programCounter);
+    this.environment.framePointer = this.environment.currentOffset - 3;
+    this.environment.currentOffset = 3;
   }
 }
