@@ -10,11 +10,17 @@ export function dat_to_strings(args: Int32Array, program: Program) {
   const dateStr = date.toLocaleDateString("de", { day: "2-digit", month: "short", year: "numeric" });
   const timeStr = date.toLocaleTimeString("de");
   const dayOfWeekStr = date.toLocaleDateString("de", { weekday: "long" });
-  const dateStrRef = program.putString(dateStr);
-  const timeStrRef = program.putString(timeStr);
-  const dayOfWeekStrRef = program.putString(dayOfWeekStr);
-  program.environment.stack[resultVectorAddress] = dateStrRef;
-  program.environment.stack[resultVectorAddress + 5] = timeStrRef;
-  program.environment.stack[resultVectorAddress + 10] = dayOfWeekStrRef;
+  program.putByte(resultVectorAddress, 0, dateStr.length);
+  for (let i = 0; i < dateStr.length; i++) {
+    program.putByte(resultVectorAddress, i + 1, dateStr.charCodeAt(i));
+  }
+  program.putByte(resultVectorAddress + 5, 0, timeStr.length);
+  for (let i = 0; i < timeStr.length; i++) {
+    program.putByte(resultVectorAddress + 5, i + 1, timeStr.charCodeAt(i));
+  }
+  program.putByte(resultVectorAddress + 10, 0, dayOfWeekStr.length);
+  for (let i = 0; i < dayOfWeekStr.length; i++) {
+    program.putByte(resultVectorAddress + 10, i + 1, dayOfWeekStr.charCodeAt(i));
+  }
   return true;
 }
