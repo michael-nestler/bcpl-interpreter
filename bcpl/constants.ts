@@ -9,4 +9,4 @@ export const LOCAL_ADDRESS_SPACE = 0x0000_0000;
 
 export const RESULT2_GLOBAL_INDEX = 10;
 
-export const STACK_SIZE = 64 * 1024 * 1024; // 512 MiB
+export const STACK_SIZE = 64 * 1024 * 1024; // 256 MiB
