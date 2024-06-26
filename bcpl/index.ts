@@ -29,14 +29,8 @@ export function loadProgram(ocodeSrc: string, args = "", input = ""): [Program, 
         program.environment.setGlobalVariable(command.arguments[i], program.resolveLabel(command.arguments[i + 1]));
       }
       if (labelIndex !== -1) {
-        const returnAddress = -1;
-        program.programCounter = program.resolveLabel(command.arguments[labelIndex + 2]);
-
-        program.environment.push(program.environment.framePointer);
-        program.environment.push(returnAddress);
-        program.environment.push(program.programCounter);
-        program.environment.framePointer = program.environment.currentOffset - 3;
-        program.environment.currentOffset = 3;
+        program.start = program.resolveLabel(command.arguments[labelIndex + 2]);
+        program.reset();
       } else {
         console.log("Encountered GLOBAL without entry at index 1");
       }

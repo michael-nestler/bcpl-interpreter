@@ -5,7 +5,6 @@ export function writef(args: Int32Array, program: Program) {
   const formatString = program.getString(stringRef);
   let formattedString = "";
   let argumentOffset = 0;
-  console.log(formatString, args);
   for (let i = 0; i < formatString.length; i++) {
     switch (formatString.charAt(i)) {
       case "%":
@@ -34,7 +33,6 @@ export function writef(args: Int32Array, program: Program) {
           case "S": {
             const strRef = args[++argumentOffset];
             const str = program.getString(strRef);
-            console.log(strRef, str);
             if (str === undefined) {
               console.log("Invalid str ref for %%s substitution", strRef);
               return false;

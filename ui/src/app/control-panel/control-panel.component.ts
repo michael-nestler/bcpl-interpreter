@@ -1,7 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, effect, inject, input, output, signal } from "@angular/core";
 import { Program } from "bcpl";
-import { Environment } from "bcpl/environment";
 import { firstValueFrom } from "rxjs";
 
 @Component({
@@ -22,14 +21,7 @@ export class ControlPanelComponent implements OnInit {
   arguments = output<string>();
   inputChange = output<string>();
   stopSignal = false;
-  history: Program[] = [];
   restoreCheckpoint = output<Program>();
-
-  constructor() {
-    effect(() => 
-      this.history = [this.program().copy()]
-    );
-  }
 
   async ngOnInit() {
     const response = await firstValueFrom(this.http.get<string[]>("/assets/bcpl/index.json"));
@@ -121,19 +113,11 @@ export class ControlPanelComponent implements OnInit {
   }
 
   stepBack() {
-    const lastCheckpoint = this.history.at(-1)?.copy();
-    if (lastCheckpoint) {
-      const targetInstructions = this.program().instructionsRan - 1;
-      if (lastCheckpoint.instructionsRan >= targetInstructions) {
-        this.history.pop();
-        this.stepBack();
-      }
-      while (lastCheckpoint.instructionsRan < targetInstructions) {
-        lastCheckpoint.next();
-      }
-      this.restoreCheckpoint.emit(lastCheckpoint);
-    } else {
-      this.reset();
+    const targetInstructions = this.program().instructionsRan - 1;
+    this.program().reset();
+    while (this.program().instructionsRan < targetInstructions) {
+      this.program().next();
     }
+    this.restoreCheckpoint.emit(this.program());
   }
 }

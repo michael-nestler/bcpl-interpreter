@@ -19,6 +19,7 @@ export class Program {
   environment: Environment = new Environment();
   commands: Command[] = [];
   programCounter = 0;
+  start = -1;
   labels = new Map<number, number>();
   returnValue = 0;
   output = "";
@@ -415,5 +416,20 @@ export class Program {
 
   copy() {
     return Object.assign(Object.create(Program.prototype), this, { environment: this.environment.copy() })
+  }
+
+  reset() {
+    this.environment.clear();
+    this.programCounter = 0;
+    this.inputOffset = 0;
+    this.instructionsRan = 0;
+    if (this.start !== -1) {
+      this.programCounter = this.start;
+      this.environment.push(this.environment.framePointer);
+      this.environment.push(-1);
+      this.environment.push(this.programCounter);
+      this.environment.framePointer = this.environment.currentOffset - 3;
+      this.environment.currentOffset = 3;
+    }
   }
 }
