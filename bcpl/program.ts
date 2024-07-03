@@ -33,6 +33,8 @@ export class Program {
   stringAddresses = new Map<number, number>();
   stringIndex = 0;
   instructionsRan = 0;
+  systemDate: Date | undefined;
+  printOut = true;
 
   next(): boolean {
     const command = this.commands[this.programCounter];

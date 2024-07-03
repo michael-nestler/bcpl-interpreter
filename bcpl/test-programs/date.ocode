@@ -1,0 +1,99 @@
+SECTION 4  'D' 'A' 'T' 'E'
+ENTRY L10 5  's' 't' 'a' 'r' 't'
+SAVE 3
+LN 0
+STORE
+LN 0
+LN 0
+STORE
+LLP 7
+STACK 58
+STORE
+LLP 59
+STACK 74
+STORE
+STACK 77
+LSTR 4  'T' 'O' '/' 'K'
+LP 6
+LN 50
+LG 102
+FNAP 74
+JT L11
+STACK 77
+LSTR 23  'B' 'a' 'd' ' ' 'a' 'r' 'g' 'u' 'm' 'e' 'n' 't' 's' ' '
+ 'f' 'o' 'r' ' ' 'D' 'A' 'T' 'E'  10 
+LG 94
+RTAP 74
+LN 20
+FNRN
+LAB L11
+LN 0
+LP 6
+ADD
+RV
+JF L12
+STACK 77
+LN 0
+LP 6
+ADD
+RV
+LG 49
+FNAP 74
+SP 3
+LP 3
+JT L13
+STACK 77
+LSTR 17  '*' '*' '*' 'C' 'a' 'n' ''' 't' ' ' 'o' 'p' 'e' 'n' ' '
+ '%' 's'  10 
+LN 0
+LP 6
+ADD
+RV
+LG 94
+RTAP 74
+LN 20
+FNRN
+LAB L13
+STACK 77
+LP 3
+LG 57
+RTAP 74
+LAB L12
+STACK 77
+LLP 4
+LG 109
+RTAP 74
+STACK 77
+LLP 4
+LP 58
+LG 110
+RTAP 74
+STACK 77
+LSTR 7  ' ' '%' 's' ' ' '%' 's'  10 
+LN 10
+LP 58
+ADD
+LP 58
+LG 94
+RTAP 74
+LP 3
+JF L14
+STACK 77
+LP 3
+LG 62
+RTAP 74
+LAB L14
+LN 0
+FNRN
+STACK 58
+STACK 6
+STACK 4
+STACK 3
+LN 0
+FNRN
+ENDPROC
+STACK 3
+STORE
+GLOBAL 1
+       1   L10
+

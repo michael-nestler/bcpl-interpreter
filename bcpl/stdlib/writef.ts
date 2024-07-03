@@ -41,6 +41,14 @@ export function writef(args: Int32Array, program: Program) {
             break;
           }
           default:
+            if (formatString.charAt(i).charCodeAt(0) >= "0".charCodeAt(0) && formatString.charAt(i).charCodeAt(0) <= "9".charCodeAt(0)) {
+              const n = formatString.charAt(i).charCodeAt(0) - "0".charCodeAt(0);
+              if (formatString.charAt(++i) === "x") {
+                // >>> 0 will convert negative numbers into the equivalent positive number so that their hex representation matches
+                formattedString += (args[++argumentOffset] >>> 0).toString(16).padStart(n, "0").toUpperCase();
+                break;
+              }
+            }
             console.log("Invalid format substitution", "%", formatString.charAt(i));
             return false;
         }
@@ -50,6 +58,8 @@ export function writef(args: Int32Array, program: Program) {
     }
   }
   program.output += formattedString;
-  console.log("[stdout]", formattedString);
+  if (program.printOut) {
+    console.log("[stdout]", formattedString);
+  }
   return true;
 }

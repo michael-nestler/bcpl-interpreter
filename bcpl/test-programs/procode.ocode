@@ -1,0 +1,1128 @@
+SECTION 7  'p' 'r' 'o' 'c' 'o' 'd' 'e'
+ENTRY L10 5  's' 't' 'a' 'r' 't'
+SAVE 3
+LLP 4
+STACK 25
+STORE
+QUERY
+LN 0
+STORE
+STACK 30
+LG 59
+FNAP 27
+STORE
+STACK 31
+LSTR 9  'F' 'R' 'O' 'M' ',' 'T' 'O' '/' 'K'
+LP 3
+LN 20
+LG 102
+FNAP 28
+LN 0
+EQ
+JF L14
+STACK 31
+LSTR 21  'B' 'a' 'd' ' ' 'a' 'r' 'g' 's' ' ' 'f' 'o' 'r' ' ' 'p'
+ 'r' 'o' 'c' 'o' 'd' 'e'  10 
+LG 89
+RTAP 28
+LN 20
+FNRN
+LAB L14
+LN 0
+LP 3
+ADD
+RV
+LN 0
+EQ
+JF L15
+LSTR 5  'o' 'c' 'o' 'd' 'e'
+LN 0
+LP 3
+ADD
+STIND
+LAB L15
+LN 1
+LP 3
+ADD
+RV
+LN 0
+EQ
+JF L16
+LSTR 1  '*'
+LN 1
+LP 3
+ADD
+STIND
+LAB L16
+STACK 31
+LN 0
+LP 3
+ADD
+RV
+LG 48
+FNAP 28
+SP 25
+LN 0
+LP 25
+EQ
+JF L17
+STACK 31
+LSTR 21  'T' 'r' 'o' 'u' 'b' 'l' 'e' ' ' 'w' 'i' 't' 'h' ' ' 'f'
+ 'i' 'l' 'e' ' ' '%' 's'  10 
+LN 0
+LP 3
+ADD
+RV
+LG 94
+RTAP 28
+LN 20
+FNRN
+LAB L17
+STACK 31
+LN 1
+LP 3
+ADD
+RV
+LG 49
+FNAP 28
+SP 26
+LN 0
+LP 26
+EQ
+JF L18
+STACK 31
+LSTR 21  'T' 'r' 'o' 'u' 'b' 'l' 'e' ' ' 'w' 'i' 't' 'h' ' ' 'f'
+ 'i' 'l' 'e' ' ' '%' 's'  10 
+LN 1
+LP 3
+ADD
+RV
+LG 94
+RTAP 28
+LN 20
+FNRN
+LAB L18
+STACK 31
+LSTR 20  'C' 'o' 'n' 'v' 'e' 'r' 't' 'i' 'n' 'g' ' ' '%' 's' ' '
+ 't' 'o' ' ' '%' 's'  10 
+LN 0
+LP 3
+ADD
+RV
+LN 1
+LP 3
+ADD
+RV
+LG 94
+RTAP 28
+STACK 31
+LP 25
+LG 56
+RTAP 28
+STACK 31
+LP 26
+LG 57
+RTAP 28
+STACK 31
+LF L12
+RTAP 28
+STACK 31
+LG 60
+RTAP 28
+LP 27
+LP 26
+EQ
+JT L19
+STACK 31
+LG 61
+RTAP 28
+LAB L19
+STACK 31
+LP 27
+LG 57
+RTAP 28
+STACK 31
+LSTR 20  'C' 'o' 'n' 'v' 'e' 'r' 's' 'i' 'o' 'n' ' ' 'c' 'o' 'm'
+ 'p' 'l' 'e' 't' 'e'  10 
+LG 94
+RTAP 28
+LN 0
+FNRN
+STACK 27
+STACK 25
+STACK 3
+LN 0
+FNRN
+ENDPROC
+ENTRY L11 3  'r' 'd' 'n'
+SAVE 3
+LN 0
+QUERY
+LN 43
+STORE
+LAB L20
+STACK 9
+LG 38
+FNAP 6
+SP 4
+LAB L22
+LN 32
+LP 4
+EQ
+JT L20
+LN 10
+LP 4
+EQ
+JT L20
+LAB L21
+LN -1
+LP 4
+EQ
+JF L23
+LN 0
+FNRN
+LAB L23
+LN 45
+LP 4
+EQ
+JF L24
+LN 45
+SP 5
+STACK 9
+LG 38
+FNAP 6
+SP 4
+LAB L24
+LN 48
+LP 4
+LE
+JF L27
+LP 4
+LN 57
+LE
+JF L27
+LAB L25
+LP 3
+LN 10
+MUL
+LP 4
+ADD
+LN 48
+SUB
+SP 3
+STACK 9
+LG 38
+FNAP 6
+SP 4
+LAB L26
+LN 48
+LP 4
+LE
+JF L28
+LP 4
+LN 57
+LE
+JT L25
+LAB L28
+LAB L27
+LN 45
+LP 5
+EQ
+JF L29
+LP 3
+NEG
+FNRN
+LAB L29
+LP 3
+FNRN
+STACK 3
+LN 0
+FNRN
+ENDPROC
+ENTRY L12 4  's' 'c' 'a' 'n'
+SAVE 3
+LAB L30
+STACK 6
+LG 219
+FNAP 3
+STORE
+LN 0
+LN 0
+LN 0
+LN 0
+LN -1
+STORE
+LN 0
+STORE
+LP 3
+RES L31
+LAB L33
+STACK 13
+LSTR 16  'B' 'a' 'd' ' ' 'O' 'C' 'O' 'D' 'E' ' ' 'o' 'p' ' ' '%'
+ 'n'  10 
+LP 3
+LG 94
+RTAP 10
+STACK 13
+LN 1001
+LG 28
+RTAP 10
+JUMP L30
+LAB L34
+RTRN
+LAB L35
+LSTR 7  'S' 'E' 'C' 'T' 'I' 'O' 'N'
+SP 4
+STACK 13
+LG 219
+FNAP 10
+SP 8
+JUMP L32
+LAB L36
+LSTR 5  'N' 'E' 'E' 'D' 'S'
+SP 4
+STACK 13
+LG 219
+FNAP 10
+SP 8
+JUMP L32
+LAB L37
+LSTR 2  'L' 'P'
+SP 5
+JUMP L32
+LAB L38
+LSTR 2  'L' 'G'
+SP 5
+JUMP L32
+LAB L39
+LSTR 2  'L' 'N'
+SP 5
+JUMP L32
+LAB L40
+LSTR 4  'L' 'F' 'L' 'T'
+SP 5
+JUMP L32
+LAB L41
+LSTR 4  'L' 'S' 'T' 'R'
+SP 4
+STACK 13
+LG 219
+FNAP 10
+SP 8
+JUMP L32
+LAB L42
+STACK 13
+LSTR 2  '#' ' '
+LG 94
+RTAP 10
+LN 1
+STACK 14
+LG 219
+FNAP 11
+STORE
+LP 10
+LP 11
+GR
+JT L44
+LAB L43
+STACK 15
+LG 219
+FNAP 12
+STORE
+STACK 16
+LP 12
+LG 41
+RTAP 13
+STACK 12
+LAB L46
+LP 10
+LN 1
+ADD
+SP 10
+LP 10
+LP 11
+LE
+JT L43
+LAB L45
+LAB L44
+STACK 10
+STACK 13
+LG 84
+RTAP 10
+JUMP L30
+LAB L47
+LSTR 4  'T' 'R' 'U' 'E'
+SP 4
+JUMP L32
+LAB L48
+LSTR 5  'F' 'A' 'L' 'S' 'E'
+SP 4
+JUMP L32
+LAB L49
+LSTR 3  'L' 'L' 'P'
+SP 5
+JUMP L32
+LAB L50
+LSTR 3  'L' 'L' 'G'
+SP 5
+JUMP L32
+LAB L51
+LSTR 2  'S' 'P'
+SP 5
+JUMP L32
+LAB L52
+LSTR 2  'S' 'G'
+SP 5
+JUMP L32
+LAB L53
+LSTR 2  'L' 'F'
+SP 7
+JUMP L32
+LAB L54
+LSTR 2  'L' 'L'
+SP 7
+JUMP L32
+LAB L55
+LSTR 3  'L' 'L' 'L'
+SP 7
+JUMP L32
+LAB L56
+LSTR 2  'S' 'L'
+SP 7
+JUMP L32
+LAB L57
+LSTR 5  'S' 'E' 'L' 'L' 'D'
+SP 6
+JUMP L32
+LAB L58
+LSTR 5  'S' 'E' 'L' 'S' 'T'
+SP 9
+JUMP L32
+LAB L59
+LSTR 5  'S' 'T' 'I' 'N' 'D'
+SP 4
+JUMP L32
+LAB L60
+LSTR 2  'R' 'V'
+SP 4
+JUMP L32
+LAB L61
+LSTR 5  'F' 'L' 'O' 'A' 'T'
+SP 4
+JUMP L32
+LAB L62
+LSTR 3  'F' 'I' 'X'
+SP 4
+JUMP L32
+LAB L63
+LSTR 4  'F' 'A' 'B' 'S'
+SP 4
+JUMP L32
+LAB L64
+LSTR 4  'F' 'M' 'U' 'L'
+SP 4
+JUMP L32
+LAB L65
+LSTR 4  'F' 'D' 'I' 'V'
+SP 4
+JUMP L32
+LAB L66
+LSTR 4  'F' 'A' 'D' 'D'
+SP 4
+JUMP L32
+LAB L67
+LSTR 4  'F' 'S' 'U' 'B'
+SP 4
+JUMP L32
+LAB L68
+LSTR 4  'F' 'N' 'E' 'G'
+SP 4
+JUMP L32
+LAB L69
+LSTR 3  'F' 'E' 'Q'
+SP 4
+JUMP L32
+LAB L70
+LSTR 4  'F' 'M' 'O' 'D'
+SP 4
+JUMP L32
+LAB L71
+LSTR 3  'F' 'N' 'E'
+SP 4
+JUMP L32
+LAB L72
+LSTR 3  'F' 'L' 'S'
+SP 4
+JUMP L32
+LAB L73
+LSTR 3  'F' 'G' 'R'
+SP 4
+JUMP L32
+LAB L74
+LSTR 3  'F' 'L' 'E'
+SP 4
+JUMP L32
+LAB L75
+LSTR 3  'F' 'G' 'E'
+SP 4
+JUMP L32
+LAB L76
+LSTR 3  'M' 'U' 'L'
+SP 4
+JUMP L32
+LAB L77
+LSTR 3  'D' 'I' 'V'
+SP 4
+JUMP L32
+LAB L78
+LSTR 3  'M' 'O' 'D'
+SP 4
+JUMP L32
+LAB L79
+LSTR 3  'A' 'D' 'D'
+SP 4
+JUMP L32
+LAB L80
+LSTR 3  'S' 'U' 'B'
+SP 4
+JUMP L32
+LAB L81
+LSTR 2  'E' 'Q'
+SP 4
+JUMP L32
+LAB L82
+LSTR 2  'N' 'E'
+SP 4
+JUMP L32
+LAB L83
+LSTR 2  'L' 'S'
+SP 4
+JUMP L32
+LAB L84
+LSTR 2  'G' 'R'
+SP 4
+JUMP L32
+LAB L85
+LSTR 2  'L' 'E'
+SP 4
+JUMP L32
+LAB L86
+LSTR 2  'G' 'E'
+SP 4
+JUMP L32
+LAB L87
+LSTR 6  'L' 'S' 'H' 'I' 'F' 'T'
+SP 4
+JUMP L32
+LAB L88
+LSTR 6  'R' 'S' 'H' 'I' 'F' 'T'
+SP 4
+JUMP L32
+LAB L89
+LSTR 6  'L' 'O' 'G' 'A' 'N' 'D'
+SP 4
+JUMP L32
+LAB L90
+LSTR 5  'L' 'O' 'G' 'O' 'R'
+SP 4
+JUMP L32
+LAB L91
+LSTR 3  'E' 'Q' 'V'
+SP 4
+JUMP L32
+LAB L92
+LSTR 3  'X' 'O' 'R'
+SP 4
+JUMP L32
+LAB L93
+LSTR 3  'N' 'O' 'T'
+SP 4
+JUMP L32
+LAB L94
+LSTR 3  'N' 'E' 'G'
+SP 4
+JUMP L32
+LAB L95
+LSTR 3  'A' 'B' 'S'
+SP 4
+JUMP L32
+LAB L96
+LSTR 2  'J' 'T'
+SP 7
+JUMP L32
+LAB L97
+LSTR 2  'J' 'F'
+SP 7
+JUMP L32
+LAB L98
+LSTR 4  'G' 'O' 'T' 'O'
+SP 4
+JUMP L32
+LAB L99
+LSTR 3  'L' 'A' 'B'
+SP 7
+JUMP L32
+LAB L100
+LSTR 5  'Q' 'U' 'E' 'R' 'Y'
+SP 4
+JUMP L32
+LAB L101
+LSTR 5  'S' 'T' 'A' 'C' 'K'
+SP 5
+JUMP L32
+LAB L102
+LSTR 5  'S' 'T' 'O' 'R' 'E'
+SP 4
+JUMP L32
+LAB L103
+STACK 13
+LG 219
+FNAP 10
+STORE
+STACK 14
+LG 219
+FNAP 11
+SP 8
+STACK 14
+LSTR 9  'E' 'N' 'T' 'R' 'Y' ' ' 'L' '%' 'n'
+LP 10
+LG 94
+RTAP 11
+JUMP L32
+STACK 10
+LAB L104
+LSTR 4  'S' 'A' 'V' 'E'
+SP 5
+JUMP L32
+LAB L105
+LSTR 4  'F' 'N' 'A' 'P'
+SP 5
+JUMP L32
+LAB L106
+LSTR 4  'R' 'T' 'A' 'P'
+SP 5
+JUMP L32
+LAB L107
+LSTR 4  'F' 'N' 'R' 'N'
+SP 4
+JUMP L32
+LAB L108
+LSTR 4  'R' 'T' 'R' 'N'
+SP 4
+JUMP L32
+LAB L109
+LSTR 7  'E' 'N' 'D' 'P' 'R' 'O' 'C'
+SP 4
+JUMP L32
+LAB L110
+LSTR 3  'R' 'E' 'S'
+SP 7
+JUMP L32
+LAB L111
+LSTR 4  'J' 'U' 'M' 'P'
+SP 7
+JUMP L32
+LAB L112
+LSTR 6  'R' 'S' 'T' 'A' 'C' 'K'
+SP 5
+JUMP L32
+LAB L113
+LSTR 6  'F' 'I' 'N' 'I' 'S' 'H'
+SP 4
+JUMP L32
+LAB L114
+STACK 13
+LG 219
+FNAP 10
+STORE
+STACK 14
+LSTR 16  'S' 'W' 'I' 'T' 'C' 'H' 'O' 'N' ' ' '%' 'n' ' ' 'L' '%'
+ 'n'  10 
+LP 10
+STACK 19
+LG 219
+FNAP 16
+LG 94
+RTAP 11
+LN 1
+LP 10
+STORE
+LP 11
+LP 12
+GR
+JT L116
+LAB L115
+STACK 16
+LSTR 6  '%' 'i' '8' ' ' ' ' ' '
+STACK 20
+LG 219
+FNAP 17
+LG 94
+RTAP 13
+STACK 16
+LSTR 4  'L' '%' 'n'  10 
+STACK 20
+LG 219
+FNAP 17
+LG 94
+RTAP 13
+LAB L118
+LP 11
+LN 1
+ADD
+SP 11
+LP 11
+LP 12
+LE
+JT L115
+LAB L117
+LAB L116
+STACK 11
+STACK 14
+LG 84
+RTAP 11
+JUMP L30
+STACK 10
+LAB L119
+LSTR 7  'G' 'E' 'T' 'B' 'Y' 'T' 'E'
+SP 4
+JUMP L32
+LAB L120
+LSTR 7  'P' 'U' 'T' 'B' 'Y' 'T' 'E'
+SP 4
+JUMP L32
+LAB L121
+STACK 13
+LG 219
+FNAP 10
+STORE
+STACK 14
+LSTR 10  'G' 'L' 'O' 'B' 'A' 'L' ' ' '%' 'n'  10 
+LP 10
+LG 94
+RTAP 11
+LN 1
+LP 10
+STORE
+LP 11
+LP 12
+GR
+JT L123
+LAB L122
+STACK 16
+LSTR 6  '%' 'i' '8' ' ' ' ' ' '
+STACK 20
+LG 219
+FNAP 17
+LG 94
+RTAP 13
+STACK 16
+LSTR 4  'L' '%' 'n'  10 
+STACK 20
+LG 219
+FNAP 17
+LG 94
+RTAP 13
+LAB L125
+LP 11
+LN 1
+ADD
+SP 11
+LP 11
+LP 12
+LE
+JT L122
+LAB L124
+LAB L123
+STACK 11
+STACK 14
+LG 84
+RTAP 11
+JUMP L30
+STACK 10
+LAB L126
+LSTR 7  'D' 'A' 'T' 'A' 'L' 'A' 'B'
+SP 7
+JUMP L32
+LAB L127
+LSTR 5  'I' 'T' 'E' 'M' 'N'
+SP 5
+JUMP L32
+LAB L128
+LSTR 7  'I' 'T' 'E' 'M' 'F' 'L' 'T'
+SP 5
+JUMP L32
+LAB L31
+RSTACK 10
+SWITCHON 83 L33
+     162   L128
+     161   L127
+     160   L126
+      70   L121
+     165   L120
+     164   L119
+      63   L114
+      61   L113
+     154   L112
+     147   L111
+     159   L110
+     163   L109
+     158   L108
+     157   L107
+      42   L106
+      10   L105
+     156   L104
+     155   L103
+     153   L102
+     152   L101
+      11   L100
+     151   L99
+      43   L98
+     149   L97
+     148   L96
+      13   L95
+      12   L94
+      29   L93
+      35   L92
+      34   L91
+      33   L90
+      32   L89
+      31   L88
+      30   L87
+      24   L86
+      23   L85
+      22   L84
+      21   L83
+      20   L82
+      19   L81
+      18   L80
+      17   L79
+      16   L78
+      15   L77
+      14   L76
+     182   L75
+     181   L74
+     180   L73
+     179   L72
+     178   L71
+     172   L70
+     177   L69
+     176   L68
+     174   L67
+     173   L66
+     171   L65
+     170   L64
+     169   L63
+     168   L62
+     167   L61
+       8   L60
+     146   L59
+     203   L58
+     202   L57
+     145   L56
+     142   L55
+     139   L54
+     133   L53
+     144   L52
+     143   L51
+     141   L50
+     140   L49
+       5   L48
+       4   L47
+     209   L42
+     138   L41
+     137   L40
+     136   L39
+     135   L38
+     134   L37
+      39   L36
+      40   L35
+       0   L34
+
+LAB L32
+LN 0
+LP 4
+EQ
+JT L129
+STACK 13
+LSTR 2  '%' 'S'
+LP 4
+LG 94
+RTAP 10
+LAB L129
+LN 0
+LP 5
+EQ
+JT L130
+STACK 13
+LG 219
+FNAP 10
+STORE
+LN #FF676980
+LP 10
+LS
+JF L131
+LP 10
+LN #00989680
+LS
+JF L131
+STACK 14
+LSTR 5  '%' 'S' ' ' '%' 'n'
+LP 5
+LP 10
+LG 94
+RTAP 11
+JUMP L132
+LAB L131
+LN 0
+JF L133
+STACK 14
+LSTR 8  '%' 'S' ' ' '#' '%' '1' '6' 'x'
+LP 5
+LP 10
+LG 94
+RTAP 11
+JUMP L134
+LAB L133
+STACK 14
+LSTR 7  '%' 'S' ' ' '#' '%' '8' 'x'
+LP 5
+LP 10
+LG 94
+RTAP 11
+LAB L134
+LAB L132
+STACK 10
+LAB L130
+LN 0
+LP 6
+EQ
+JT L135
+STACK 13
+LSTR 8  '%' 'S' ' ' '%' 'n' ' ' '%' 'n'
+LP 6
+STACK 18
+LG 219
+FNAP 15
+STACK 19
+LG 219
+FNAP 16
+LG 94
+RTAP 10
+LAB L135
+LN 0
+LP 7
+EQ
+JT L136
+STACK 13
+LSTR 6  '%' 'S' ' ' 'L' '%' 'n'
+LP 7
+STACK 18
+LG 219
+FNAP 15
+LG 94
+RTAP 10
+LAB L136
+LN 0
+LP 9
+EQ
+JT L137
+STACK 13
+LG 219
+FNAP 10
+STORE
+STACK 14
+LG 219
+FNAP 11
+STORE
+STACK 15
+LG 219
+FNAP 12
+STORE
+STACK 16
+LP 10
+LG 212
+FNAP 13
+STORE
+STACK 17
+LSTR 11  '%' 's' ' ' '%' 's' ' ' '%' 'n' ' ' '%' 'n'
+LP 9
+LP 13
+LP 11
+LP 12
+LG 94
+RTAP 14
+STACK 13
+STACK 12
+STACK 11
+STACK 10
+LAB L137
+LP 8
+LN 0
+GE
+JF L138
+STACK 13
+LSTR 4  ' ' '%' 'n' ' '
+LP 8
+LG 94
+RTAP 10
+LN 1
+LP 8
+STORE
+LP 10
+LP 11
+GR
+JT L140
+LAB L139
+STACK 15
+LG 219
+FNAP 12
+STORE
+LP 10
+LN 15
+MOD
+LN 0
+EQ
+JF L143
+STACK 16
+LG 84
+RTAP 13
+LAB L143
+LN 32
+LP 12
+LE
+JF L144
+LP 12
+LN 127
+LE
+JF L144
+STACK 16
+LSTR 5  ' ' ''' '%' 'c' '''
+LP 12
+LG 94
+RTAP 13
+JUMP L145
+LAB L144
+STACK 16
+LSTR 5  ' ' '%' 'i' '3' ' '
+LP 12
+LG 94
+RTAP 13
+LAB L145
+STACK 12
+LAB L142
+LP 10
+LN 1
+ADD
+SP 10
+LP 10
+LP 11
+LE
+JT L139
+LAB L141
+LAB L140
+STACK 10
+LAB L138
+STACK 13
+LG 84
+RTAP 10
+JUMP L30
+STACK 9
+STACK 4
+STACK 3
+RTRN
+RTRN
+ENDPROC
+ENTRY L13 6  's' 'f' 'n' 'a' 'm' 'e'
+SAVE 4
+LP 3
+RES L146
+LAB L147
+LSTR 7  'U' 'N' 'K' 'N' 'O' 'W' 'N'
+FNRN
+LAB L148
+LSTR 4  'N' 'U' 'L' 'L'
+FNRN
+LAB L149
+LSTR 5  'V' 'E' 'C' 'A' 'P'
+FNRN
+LAB L150
+LSTR 4  'F' 'M' 'U' 'L'
+FNRN
+LAB L151
+LSTR 4  'F' 'D' 'I' 'V'
+FNRN
+LAB L152
+LSTR 4  'F' 'M' 'O' 'D'
+FNRN
+LAB L153
+LSTR 4  'F' 'A' 'D' 'D'
+FNRN
+LAB L154
+LSTR 4  'F' 'S' 'U' 'B'
+FNRN
+LAB L155
+LSTR 3  'M' 'U' 'L'
+FNRN
+LAB L156
+LSTR 3  'D' 'I' 'V'
+FNRN
+LAB L157
+LSTR 3  'M' 'O' 'D'
+FNRN
+LAB L158
+LSTR 3  'A' 'D' 'D'
+FNRN
+LAB L159
+LSTR 3  'S' 'U' 'B'
+FNRN
+LAB L160
+LSTR 6  'L' 'S' 'H' 'I' 'F' 'T'
+FNRN
+LAB L161
+LSTR 6  'R' 'S' 'H' 'I' 'F' 'T'
+FNRN
+LAB L162
+LSTR 6  'L' 'O' 'G' 'A' 'N' 'D'
+FNRN
+LAB L163
+LSTR 5  'L' 'O' 'G' 'O' 'R'
+FNRN
+LAB L164
+LSTR 3  'E' 'Q' 'V'
+FNRN
+LAB L165
+LSTR 3  'X' 'O' 'R'
+FNRN
+LAB L146
+RSTACK 4
+SWITCHON 18 L147
+      17   L165
+      16   L164
+      15   L163
+      14   L162
+      13   L161
+      12   L160
+      11   L159
+      10   L158
+       9   L157
+       8   L156
+       7   L155
+       6   L154
+       5   L153
+       4   L152
+       3   L151
+       2   L150
+       1   L149
+       0   L148
+
+LN 0
+FNRN
+ENDPROC
+STACK 3
+STORE
+GLOBAL 3
+     212   L13
+     219   L11
+       1   L10
+
