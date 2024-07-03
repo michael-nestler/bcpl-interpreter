@@ -5,7 +5,9 @@ test("sudoku", async () => {
   const problem = `
 000638000 706000305 010000040
 008712400 090000050 002569100
-030000010 105000608 000184000`.trim().replaceAll("\n", " ");
+030000010 105000608 000184000`
+    .trim()
+    .replaceAll("\n", " ");
   const program = await runCode("./sudoku.ocode", { arguments: problem });
   expect(program.output.trim()).toEndWith(`
 Solution number 1

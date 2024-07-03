@@ -3,7 +3,8 @@ import { runCode } from "./testing";
 
 test("enlarge", async () => {
   const program = await runCode("./enlarge.ocode", { arguments: "Test" });
-  expect(program.output.trim()).toBe(`
+  expect(program.output.trim()).toBe(
+    `
                      ########  ########   ######   ######## 
                      ########  ########  ########  ######## 
                         ##     ##        ##           ##    
@@ -11,5 +12,6 @@ test("enlarge", async () => {
                         ##     ##              ##     ##    
                         ##     ##              ##     ##    
                         ##     ########  ########     ##    
-                        ##     ########   ######      ##`.trim());
+                        ##     ########   ######      ##`.trim(),
+  );
 });

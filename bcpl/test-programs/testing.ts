@@ -13,7 +13,7 @@ interface RunOptions {
 }
 
 export async function runCode(path: string, options: Partial<RunOptions> = {}): Promise<Program> {
-  console.time("Test run " + path);
+  console.time(`Test run ${path}`);
   const testScript = await loadFile(path);
   const [program] = loadProgram(testScript);
   if (options.arguments) {
@@ -31,7 +31,7 @@ export async function runCode(path: string, options: Partial<RunOptions> = {}): 
       await debugPrompt(program);
     }
   } while (program.next());
-  console.timeEnd("Test run " + path);
+  console.timeEnd(`Test run ${path}`);
   console.log(program.instructionsRan, "instructions ran for", path);
   return program;
 }
